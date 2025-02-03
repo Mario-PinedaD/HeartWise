@@ -1,35 +1,132 @@
 // login_screen.dart
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:heartwise/view/crear_cuenta.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
+  @override
+  _LoginScreen createState() => _LoginScreen();
+}
+
+class _LoginScreen extends State<LoginScreen> {
+
+  bool _isPasswordVisible = false;
+  TextEditingController _passwordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
+    //Se toma el ancho de la pantalla para después calcular el ancho del button
+    //con un máximo del 60% de la pantalla
+    double screenWidth = MediaQuery.of(context).size.width;
+    double buttonWidth = screenWidth * 0.6;
+
     return Scaffold(
-      backgroundColor: Colors.red[700],
+      backgroundColor: Color(0xFFDC3644),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Icon(Icons.favorite, color: Colors.white, size: 48),
+            Image.asset('lib/sources/heart.png',
+                width: 50, height: 50, fit: BoxFit.contain),
             SizedBox(height: 20),
-            Text('Iniciar Sesión', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white), textAlign: TextAlign.center),
+            Text(
+              'Iniciar Sesión',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.inter(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
+            ),
             SizedBox(height: 20),
             Card(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    TextField(decoration: InputDecoration(labelText: 'Correo Electrónico')),
-                    TextField(obscureText: true, decoration: InputDecoration(labelText: 'Contraseña')),
+                    Text(
+                      'Ingresa tus credenciales',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.inter(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey.shade500),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    TextField(
+                      decoration: InputDecoration(
+                        labelText: 'Correo Electrónico',
+                        labelStyle: GoogleFonts.inter(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide:
+                              BorderSide(color: Colors.black.withOpacity(0.3)),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.blue),
+                            borderRadius: BorderRadius.circular(12)),
+                        fillColor: Colors.white.withOpacity(0.1),
+                        filled: true,
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    TextField(
+                      controller: _passwordController,
+                      obscureText: !_isPasswordVisible,
+                      decoration: InputDecoration(
+                        labelText: 'Contraseña',
+                        labelStyle: GoogleFonts.inter(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                        hintText: 'Genera tu contraseña',
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _isPasswordVisible
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                          ),
+                          onPressed: (){
+                            setState(() {
+                              _isPasswordVisible = !_isPasswordVisible;
+                            });
+                          },
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide:
+                          BorderSide(color: Colors.black.withOpacity(0.3)),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.blue),
+                            borderRadius: BorderRadius.circular(12)),
+                        fillColor: Colors.white.withOpacity(0.1),
+                        filled: true,
+                      ),
+                    ),
                     Align(
                       alignment: Alignment.centerRight,
                       child: TextButton(
                         onPressed: () {},
-                        child: Text('Perdiste tu contraseña?', style: TextStyle(color: Colors.grey)),
+                        child: Text(
+                          'Perdiste tu contraseña?',
+                          style: GoogleFonts.inter(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey,
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -38,19 +135,51 @@ class LoginScreen extends StatelessWidget {
             ),
             SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () {},
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: Colors.red[700],
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                  backgroundColor: Colors.white.withOpacity(0.2),
+                  //Opacidad blanca
+                  foregroundColor: Colors.white,
+                  side: BorderSide(color: Colors.white),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 0,
+                  minimumSize: Size(buttonWidth, 60)),
+              onPressed: () {
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(builder: (context) => LoginScreen()),
+                // );
+              },
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                child: Text(
+                  'Entrar',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.inter(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
+                ),
               ),
-              child: Text('Entrar'),
+            ),
+            SizedBox(
+              height: 10,
             ),
             TextButton(
               onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterScreen()));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => RegisterScreen()));
               },
-              child: Text('No tienes una cuenta? Crear una', style: TextStyle(color: Colors.white)),
+              child: Text(
+                'No tienes una cuenta? Crear una',
+                style: GoogleFonts.inter(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
             ),
           ],
         ),
