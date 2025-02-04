@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:heartwise/view/crear_cuenta.dart';
+import 'package:heartwise/view/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -146,10 +147,10 @@ class _LoginScreen extends State<LoginScreen> {
                   elevation: 0,
                   minimumSize: Size(buttonWidth, 60)),
               onPressed: () {
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(builder: (context) => LoginScreen()),
-                // );
+                Navigator.push(
+                   context,
+                   MaterialPageRoute(builder: (context) => home_screen()),
+                 );
               },
               child: Padding(
                 padding:

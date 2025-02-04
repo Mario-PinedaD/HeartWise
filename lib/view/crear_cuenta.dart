@@ -1,6 +1,7 @@
 // register_screen.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:heartwise/view/home_screen.dart';
 import 'package:heartwise/view/login_screen.dart';
 
 //class RegisterScreen extends StatelessWidget {
@@ -212,10 +213,10 @@ class _RegisterScreenState extends State<RegisterScreen>{
                   elevation: 0,
                   minimumSize: Size(10, 60)),
               onPressed: () {
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(builder: (context) => LoginScreen()),
-                // );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => home_screen()),
+                );
               },
               child: Padding(
                 padding:
