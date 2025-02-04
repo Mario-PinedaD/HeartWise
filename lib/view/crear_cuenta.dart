@@ -78,7 +78,7 @@ class _RegisterScreenState extends State<RegisterScreen>{
                     ),
                     TextField(
                       decoration: InputDecoration(
-                        labelText: 'Contraseña',
+                        labelText: 'Correo Elecctrónico',
                         labelStyle: GoogleFonts.inter(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
