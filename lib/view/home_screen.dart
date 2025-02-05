@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:heartwise/view/evaluacion_corporal.dart';
 
 class home_screen extends StatelessWidget {
 
   final List<Map<String, dynamic>> datos = [
     {'titulo': 'Evaluación Corporal Básica',
       'descripcion': 'Evalúa tus parámetros físicos clave, como peso, IMC y composición corporal para un control básico de tu salud.',
-      'disponible': true},
+      'disponible': true,
+      'direc': EvaluacionCorporalScreen()},
     {'titulo': 'Análisis Clínico Integral',
       'descripcion': 'Evalúa tus parámetros físicos clave, como peso, IMC y composición corporal para un control básico de tu salud.',
-      'disponible': false},
+      'disponible': false,
+      'direc': null},
     {'titulo': 'Perfil Genético Avanzado',
       'descripcion': 'Analiza tu ADN y metabolismo para una evaluación profunda de salud, enfocada en la prevención de enfermedades a nivel molecular.',
-      'disponible': false},
+      'disponible': false,
+      'direc': null},
   ];
   @override
   Widget build(BuildContext context) {
@@ -84,9 +88,11 @@ class home_screen extends StatelessWidget {
                     width: carruselWidth,
                     margin: EdgeInsets.symmetric(horizontal: 10),
                     child: _buildCardPrueba(
+                        context: context,
                         titulo: item['titulo'],
                         descripcion: item['descripcion'],
                         disponible: item['disponible'],
+                        direc:item['direc']
                     ),
                   );
                 },
@@ -99,13 +105,34 @@ class home_screen extends StatelessWidget {
   }
 
   Widget _buildCardPrueba({
+    required BuildContext context,
     required String titulo,
     required String descripcion,
     bool disponible = false,
+    //String? direc,
+    Widget? direc,
   }) {
     return disponible ? // Aquí se cumpliran los casos verdaderos
-    Card(
-      elevation: 10, //Esto es lo que le da la sombra coqueta
+    GestureDetector(
+      onTap: () {
+        // Aquí pasas el parámetro para redirigir al archivo deseado
+        if(direc!= null){
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => direc, // Aquí el archivo .dart al que deseas navegar
+            ),
+          );
+        }
+      },child: Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+        side: const BorderSide(
+          color: Colors.white,
+          width: 2,
+        )
+      ),
+      elevation: 20, //Esto es lo que le da la sombra coqueta
       color: Color(0xFFDC3644),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -113,12 +140,20 @@ class home_screen extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Disponible',
-              style: GoogleFonts.poppins(
-                fontSize: 16,
-                backgroundColor: Colors.white,
-                color: Color(0xFFDC3644),
+            Container(
+              width: 150,
+              height: 50,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: Text(
+                'Disponible',
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  color: Color(0xFFDC3644),
+                ),
               ),
             ),
             SizedBox(height: 10),
@@ -131,18 +166,24 @@ class home_screen extends StatelessWidget {
               ),
             ),
             SizedBox(height: 20),
-            Text(descripcion, style: GoogleFonts.poppins(
-              fontSize: 16,
-              color: Colors.white,
-              backgroundColor: Color(0xFFE54653),
-            ),),
+            Card(
+              elevation: 4,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                color: Color(0xFFE54653),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(descripcion, style: GoogleFonts.poppins(
+                fontSize: 16,
+                color: Colors.white,
+                //backgroundColor: Colors.grey.withOpacity(.5),
+                  ),
+                ),
+              ),
+            ),
             Spacer(),
             Align(
               alignment: Alignment.center,
-              child: ElevatedButton(
-                onPressed: () {
-                  // Acción al presionar "Realizar"
-                },
                 child: Text('Realizar',
                   style: GoogleFonts.poppins(
                       fontSize: 16,
@@ -152,10 +193,11 @@ class home_screen extends StatelessWidget {
                   ),
                 ),
               ),
-            ),
+            SizedBox(height: 20,),
           ],
         ),
       ),
+    ),
     )
     // AQUI LOS CASOS FALSOS
         : Card(
@@ -167,12 +209,20 @@ class home_screen extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Solo Médicos',
-              style: GoogleFonts.poppins(
-                fontSize: 16,
-                backgroundColor: Colors.black,
-                color: Colors.white,
+            Container(
+              width: 150,
+              height: 50,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Text(
+                  'Solo Médicos',
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    color: Colors.white,
+                  ),
               ),
             ),
             SizedBox(height: 10),
@@ -184,30 +234,32 @@ class home_screen extends StatelessWidget {
               ),
             ),
             SizedBox(height: 8),
-            Text(descripcion, style: GoogleFonts.poppins(
-              fontSize: 16,
-              color: Colors.black,
-              backgroundColor: Colors.grey.withOpacity(.5),
+            Card(
+                elevation: 4,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Colors.grey.withOpacity(.5),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(descripcion, style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  color: Colors.black,
+                  ),
+                ),
               ),
             ),
             Spacer(),
             Align(
               alignment: Alignment.center,
-              child: ElevatedButton(
-                onPressed: () {
-                  // Acción al presionar "Realizar"
-                },
-                child: Text('Realizar',
+              child: Text('Acude al médico',
                   style: GoogleFonts.poppins(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      backgroundColor: Colors.red.withOpacity(0),
-                      color: Colors.grey.withOpacity(.5),
-
+                      backgroundColor: Colors.transparent.withOpacity(0),
                   ),
                 ),
-              ),
             ),
+            SizedBox(height: 20,),
           ],
         ),
       ),
