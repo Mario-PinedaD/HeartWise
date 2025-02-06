@@ -140,11 +140,11 @@ class _RegisterScreenState extends State<RegisterScreen>{
                             icon: Icon(Icons.arrow_drop_down, color: Colors.black),
                             underline: SizedBox(),
                             style: GoogleFonts.inder(
-                              fontSize: 16,
-                              color: Colors.black
+                                fontSize: 16,
+                                color: Colors.black
                             ),
                             items:
-                                <String>['Hombre', 'Mujer'].map((String gender) {
+                            <String>['Hombre', 'Mujer'].map((String gender) {
                               return DropdownMenuItem<String>(
                                 value: gender,
                                 child: Text(gender),
