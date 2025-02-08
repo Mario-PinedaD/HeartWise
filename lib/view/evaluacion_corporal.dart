@@ -189,7 +189,7 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
                                 ],
                               ),
                             ),
-                          ) 
+                          )
                         ],
                       ),
                       const SizedBox(height: 12),
