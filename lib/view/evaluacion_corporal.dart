@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:heartwise/view/resultados_screen.dart';
 import 'package:intl/intl.dart';
 
 class EvaluacionCorporalScreen extends StatefulWidget {
@@ -245,7 +246,8 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
 
                       // Botón Finalizar
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {Navigator.push(context,
+                            MaterialPageRoute(builder: (context) => ResultadosScreen()));},
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red,
                           shape: RoundedRectangleBorder(
