@@ -10,9 +10,13 @@ class EvaluacionCorporalScreen extends StatefulWidget {
 class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
   DateTime? _fechaSeleccionada;
   String? _selectedGender;
+  int? altura;
+  int? peso;
 
   @override
   Widget build(BuildContext context) {
+    double? screenAlto = MediaQuery.of(this.context).size.height;
+    double screenAncho = MediaQuery.of(this.context).size.width;
     return Scaffold(
       backgroundColor: Color(0xFFDC3644),
       body: SafeArea(
@@ -113,14 +117,18 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
                                   initialDate: DateTime.now(),
                                   firstDate: DateTime(1950),
                                   lastDate: DateTime(2100));
-                              if (_fechaSeleccionada != null) {
+                              if (pickedDate != null) { //antes estaba _fechaSeleecionada
                                 setState(() {
                                   _fechaSeleccionada = pickedDate;
                                 });
                               }
                             },
                             style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red),
+                                backgroundColor: Colors.red,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5)
+                              ),
+                            ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: <Widget>[
@@ -138,12 +146,13 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
                                     fontWeight: FontWeight.bold,
                                   ),
                                   _fechaSeleccionada == null
-                                      ? 'Fecha'
+                                      ? 'Edad'
                                       : DateFormat('dd/MM/yyyy')
                                           .format(_fechaSeleccionada!),
                                 ),
                               ],
                             ),
+
                           ),
                           TextButton(
                             onPressed: () {},
@@ -177,7 +186,7 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
                                   SizedBox(width: 8),
                                   Text(
                                     _selectedGender ?? "Sexo",
-                                    style: GoogleFonts.inder(
+                                    style: GoogleFonts.poppins(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white, // Texto en blanco
@@ -198,17 +207,47 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          infoCard(Icons.fitness_center, 'P', '56'),
-                          infoCard(Icons.straighten, 'Al', '174'),
+                          ElevatedButton.icon(
+                            onPressed: () => _showInputDialog(context,"Peso"),
+                            icon: Icon(Icons.fitness_center,color: Colors.white,),
+                            label: Text(
+                              peso == null ? "Peso" : "${peso} kg",
+                              style: GoogleFonts.poppins(
+                                  fontSize: 16, fontWeight: FontWeight.bold,
+                              color: Colors.white),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                            ),
+                          ),
+                          ElevatedButton.icon(
+                            onPressed: () => _showInputDialog(context,"Altura"),
+                            icon: Icon(Icons.height,color: Colors.white,),
+                            label: Text(
+                                altura == null ? "Altura" : "${altura} cm",
+                                style: GoogleFonts.poppins(fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                            ),
+                          ),
                         ],
                       ),
+
                       const SizedBox(height: 20),
 
                       // Botón Finalizar
                       ElevatedButton(
                         onPressed: () {},
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.black,
+                          backgroundColor: Colors.red,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -218,9 +257,9 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
                         child: Text(
                           'Finalizar',
                           style: GoogleFonts.poppins(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white),
                         ),
                       ),
                     ],
@@ -261,4 +300,57 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
       ),
     );
   }
+  void _showInputDialog(BuildContext context, String type) {
+    TextEditingController controller = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Ingrese su $type", style:
+            GoogleFonts.poppins(fontSize: 16,fontWeight: FontWeight.bold,), textAlign: TextAlign.center,
+          ),
+          backgroundColor: Colors.white,
+          content: TextField(
+            controller: controller,
+            style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold,),
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(hintText: ""),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text("Cancelar", style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: Colors.black),),
+            ),
+            TextButton(
+              onPressed: () {
+                int? value = int.tryParse(controller.text);
+                if (value != null && value >= 0 && value <= (type == 'Peso' ? 300 : 999)) {
+                  setState(() {
+                    if (type == "Peso") {
+                      peso = value;
+                    } else {
+                      altura = value;
+                    }
+                  });
+                  Navigator.pop(context);
+                }
+              },
+              style: TextButton.styleFrom(backgroundColor: Colors.red,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                padding: EdgeInsets.symmetric(
+                    horizontal: 20, vertical: 12),
+              ),
+              child: Text("Aceptar", style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: Colors.white),),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 }
