@@ -102,7 +102,7 @@ class _ResultadosScreenState  extends State<ResultadosScreen> with SingleTickerP
                 Icon(Icons.person, color: Colors.white),
                 SizedBox(width: 8),
                 Text(
-                  "Abraham Carrasco Barradas",
+                  "Usuario Hermoso Precioso",
                   style: TextStyle(fontSize: 16, color: Colors.white),
                 ),
               ],
