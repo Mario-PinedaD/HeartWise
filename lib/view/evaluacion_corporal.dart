@@ -10,9 +10,10 @@ class EvaluacionCorporalScreen extends StatefulWidget {
 
 class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
   DateTime? _fechaSeleccionada;
-    int? edad; // Esta será calcularda con: Fecha nacimiento - fecha actual (obteniendo solo el año)
+  int?
+      edad; // Esta será calcularda con: Fecha nacimiento - fecha actual (obteniendo solo el año)
   String? _selectedGender;
-    int? genero; //1 = Hombre | 2 = Mujer
+  int? genero; //1 = Hombre | 2 = Mujer
   double? peso; //Peso, no sabes leer o q?
   double? altura; //Es lo mismo que 'Talla'
   //Estos son para comenzar con los análisis y predicciones:
@@ -37,7 +38,8 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
               children: [
                 // Botón de regreso
                 InkWell(
-                  onTap: () => ( Navigator.pop(context)), //Navigator.pop(context),
+                  onTap: () => (Navigator.pop(context)),
+                  //Navigator.pop(context),
                   child: Icon(Icons.arrow_back, color: Colors.white, size: 30),
                 ),
                 const SizedBox(height: 8),
@@ -130,6 +132,10 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
                                 //antes estaba _fechaSeleecionada
                                 setState(() {
                                   _fechaSeleccionada = pickedDate;
+                                  edad = DateTime.now()
+                                          .difference(_fechaSeleccionada!)
+                                          .inDays ~/
+                                      365;
                                 });
                               }
                             },
@@ -161,7 +167,12 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
                                   */
                                   _fechaSeleccionada == null
                                       ? 'Edad'
-                                      : (DateTime.now().difference(_fechaSeleccionada!).inDays ~/ 365).toString(),
+                                      : (DateTime.now()
+                                                  .difference(
+                                                      _fechaSeleccionada!)
+                                                  .inDays ~/
+                                              365)
+                                          .toString(),
                                 ),
                               ],
                             ),
@@ -180,6 +191,11 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
                               onSelected: (String newValue) {
                                 setState(() {
                                   _selectedGender = newValue;
+                                  if (_selectedGender == "Hombre") {
+                                    genero = 1;
+                                  } else {
+                                    genero = 2;
+                                  }
                                 });
                               },
                               color: Colors.white,
@@ -242,6 +258,7 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
                           ElevatedButton.icon(
                             onPressed: () =>
                                 _showInputDialog(context, "Altura"),
+                                //_mostrarDialog(context,"Altura", altura, "cm", onValueChanged: (newValue){setState(() {altura = newValue;});}),
                             icon: Icon(
                               Icons.height,
                               color: Colors.white,
@@ -278,7 +295,7 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
                               color: Colors.white,
                             ),
                             label: Text(
-                              musculo == null ? "Músculo" : "${musculo}",
+                              musculo == null ? "Músculo" : "${musculo}%",
                               style: GoogleFonts.poppins(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -292,13 +309,14 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
                             ),
                           ),
                           ElevatedButton.icon(
-                            onPressed: () => _showInputDialog(context, "Grasa Total"),
+                            onPressed: () =>
+                                _showInputDialog(context, "Grasa Total"),
                             icon: Icon(
                               Icons.opacity,
                               color: Colors.white,
                             ),
                             label: Text(
-                              grasaT == null ? "Grasa" : "${grasaT}",
+                              grasaT == null ? "Grasa" : "${grasaT}%",
                               style: GoogleFonts.poppins(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -351,7 +369,7 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
                             label: Text(
                               grasaVisc == null
                                   ? "Grasa Visceral"
-                                  : "${grasaVisc}",
+                                  : "${grasaVisc}%",
                               style: GoogleFonts.poppins(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -404,11 +422,41 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
                       // Botón Finalizar
                       ElevatedButton(
                         onPressed: () {
-                          Navigator.push(
+                          /*Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => ResultadosScreen()));
+                                  builder: (context) => ResultadosScreen()));*/
                           print(edad);
+                          print(genero);
+                          print(peso);
+                          print(altura);
+                          print(musculo);
+                          print(grasaT);
+                          print(imc);
+                          print(grasaVisc);
+                          print(metabBasal);
+                          print("ESTE ES EL RESULTADO DE LA REGRESION");
+                          print(calcularRegresion(
+                              edad!,
+                              genero!,
+                              peso!,
+                              altura!,
+                              musculo!,
+                              grasaT!,
+                              imc!,
+                              grasaVisc!,
+                              metabBasal!));
+                          print("ESTE ES EL RESULTADO DE LA CLASIFICACION");
+                          print(calcularClasificacion(
+                              edad!,
+                              genero!,
+                              peso!,
+                              altura!,
+                              musculo!,
+                              grasaT!,
+                              imc!,
+                              grasaVisc!,
+                              metabBasal!));
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red,
@@ -465,6 +513,80 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
     );
   }
 
+  void _mostrarDialog(
+    BuildContext context,
+    String titulo,
+    double variable,
+    String unidad,
+    ValueChanged<double> onValueChanged,
+  ) {
+    TextEditingController controller = TextEditingController(text: variable.toString());
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(
+            "Ingrese: $titulo ($unidad)",
+            style: GoogleFonts.poppins(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          backgroundColor: Colors.white,
+          content: TextField(
+            controller: controller,
+            style: GoogleFonts.poppins(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(hintText: "Ingrese el valor"),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text(
+                "Cancelar",
+                style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                double? value = double.tryParse(controller.text);
+                if (value != null && value >= 0) {
+                  onValueChanged(value);
+                  Navigator.pop(context);
+                }
+              },
+              style: TextButton.styleFrom(
+                backgroundColor: Colors.red,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              ),
+              child: Text(
+                "Aceptar",
+                style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _showInputDialog(BuildContext context, String type) {
     TextEditingController controller = TextEditingController();
 
@@ -504,21 +626,19 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
             TextButton(
               onPressed: () {
                 double? value = double.tryParse(controller.text);
-                if (value != null &&
-                    value >= 0 &&
-                    value <= (type == 'Peso' ? 300.0 : 999.0)) {
+                if (value != null && value >= 0) {
                   setState(() {
                     if (type == "Peso") {
                       peso = value;
                     } else if (type == "Altura") {
                       altura = value.toDouble();
-                    } else if (type == "Músculo"){
+                    } else if (type == "Músculo") {
                       musculo = value;
-                    } else if (type == "Grasa Total"){
+                    } else if (type == "Grasa Total") {
                       grasaT = value;
-                    } else if (type == "IMC"){
+                    } else if (type == "IMC") {
                       imc = value;
-                    }else if (type == "Grasa Visceral"){
+                    } else if (type == "Grasa Visceral") {
                       grasaVisc = value;
                     } else {
                       metabBasal = value;
@@ -546,409 +666,177 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
     );
   }
 
-  double clasificar(
-      double peso,
-      double talla,
-      double metabBasal,
-      double grasaT,
-      double edad,
-      double imc,
-      double grasaVisc,
-      double musculo,
-      double genero) {
-    if (peso <= 0.06) {
-      if (talla <= 1.43) {
-        if (talla <= -0.61) {
-          if (peso <= -0.13) {
-            if (peso <= -0.56) {
-              if (metabBasal <= -1.00) {
-                return 0;
-              } else {
-                if (talla <= -1.67) {
-                  return 0;
-                } else {
-                  if (metabBasal <= -0.70) {
-                    if (grasaT <= 0.12) {
-                      if (edad <= -0.41) {
-                        if (peso <= -1.17) {
-                          return 0;
-                        } else {
-                          // truncated branch of depth 2
-                          return 0; // Asumiendo que la clase es 0
-                        }
-                      } else {
-                        if (peso <= -1.35) {
-                          // truncated branch of depth 2
-                          return 0; // Asumiendo que la clase es 0
-                        } else {
-                          // truncated branch of depth 4
-                          return 0; // Asumiendo que la clase es 0
-                        }
-                      }
-                    } else {
-                      return 5;
-                    }
-                  } else {
-                    if (metabBasal <= -0.63) {
-                      if (talla <= -1.26) {
-                        return 5;
-                      } else {
-                        if (talla <= -0.85) {
-                          return 0;
-                        } else {
-                          return 0;
-                        }
-                      }
-                    } else {
-                      if (metabBasal <= -0.59) {
-                        return 5;
-                      } else {
-                        if (talla <= -0.90) {
-                          // truncated branch of depth 2
-                          return 0; // Asumiendo que la clase es 0
-                        } else {
-                          return 0;
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            } else {
-              if (edad <= 1.32) {
-                if (imc <= 0.66) {
-                  if (talla <= -0.78) {
-                    return 0;
-                  } else {
-                    return 0;
-                  }
-                } else {
-                  return 5;
-                }
-              } else {
-                return 10;
-              }
-            }
+  double calcularRegresion(
+      int Edad,
+      int Genero,
+      double Peso,
+      double Talla,
+      double Musculo,
+      double GrasaT,
+      double IMC,
+      double GrasaVisceral,
+      double MetabBasal) {
+    if (IMC <= 31.14) {
+      if (Musculo <= 43.71) {
+        if (Peso <= 61.20) {
+          if (IMC <= 17.51) {
+            if (Musculo <= 28.42)
+              return 10.22126;
+            else
+              return 14.20329805;
           } else {
-            if (grasaVisc <= 0.24) {
-              return 5;
-            } else {
-              return 0;
-            }
+            if (MetabBasal <= 1080.73)
+              return 8.10861737;
+            else
+              return 9.55598545;
           }
         } else {
-          if (grasaVisc <= -0.38) {
-            if (edad <= 0.47) {
-              if (metabBasal <= -0.63) {
-                if (grasaT <= -0.32) {
-                  if (peso <= -1.26) {
-                    if (imc <= -1.49) {
-                      return 5;
-                    } else {
-                      return 0;
-                    }
-                  } else {
-                    return 5;
-                  }
-                } else {
-                  if (metabBasal <= -0.66) {
-                    if (talla <= 0.24) {
-                      return 0;
-                    } else {
-                      return 10;
-                    }
-                  } else {
-                    return 5;
-                  }
-                }
-              } else {
-                if (imc <= -0.76) {
-                  if (grasaVisc <= -1.09) {
-                    if (grasaT <= -2.15) {
-                      if (peso <= -0.99) {
-                        return 10;
-                      } else {
-                        return 0;
-                      }
-                    } else {
-                      if (imc <= -1.35) {
-                        return 0;
-                      } else {
-                        if (edad <= 0.05) {
-                          return 5;
-                        } else {
-                          return 0;
-                        }
-                      }
-                    }
-                  } else {
-                    if (edad <= -0.13) {
-                      if (musculo <= -0.50) {
-                        return 5;
-                      } else {
-                        if (grasaT <= -0.48) {
-                          return 0;
-                        } else {
-                          // truncated branch of depth 3
-                          return 0; // Asumiendo que la clase es 0
-                        }
-                      }
-                    } else {
-                      if (grasaT <= -0.34) {
-                        return 5;
-                      } else {
-                        return 0;
-                      }
-                    }
-                  }
-                } else {
-                  if (peso <= -0.07) {
-                    if (metabBasal <= -0.18) {
-                      if (metabBasal <= -0.44) {
-                        if (musculo <= -0.26) {
-                          // truncated branch of depth 3
-                          return 0; // Asumiendo que la clase es 0
-                        } else {
-                          return 5;
-                        }
-                      } else {
-                        if (peso <= -0.19) {
-                          // truncated branch of depth 4
-                          return 0; // Asumiendo que la clase es 0
-                        } else {
-                          return 5;
-                        }
-                      }
-                    } else {
-                      if (imc <= -0.70) {
-                        return 0;
-                      } else {
-                        return 5;
-                      }
-                    }
-                  } else {
-                    return 0;
-                  }
-                }
-              }
-            } else {
-              if (grasaT <= -0.58) {
-                if (grasaVisc <= -0.97) {
-                  return 0;
-                } else {
-                  return 5;
-                }
-              } else {
-                return 0;
-              }
-            }
+          if (Talla <= 158.00) {
+            if (Genero <= 1.50)
+              return 9.71924446;
+            else
+              return 12.76163559;
           } else {
-            if (grasaVisc <= 0.07) {
-              if (metabBasal <= 0.72) {
-                if (musculo <= -0.73) {
-                  if (imc <= -0.14) {
-                    return 0;
-                  } else {
-                    return 5;
-                  }
-                } else {
-                  if (talla <= 0.68) {
-                    if (musculo <= 1.99) {
-                      if (imc <= 0.08) {
-                        if (peso <= -0.50) {
-                          return 5;
-                        } else {
-                          return 5;
-                        }
-                      } else {
-                        if (imc <= 0.10) {
-                          return 0;
-                        } else {
-                          // truncated branch of depth 2
-                          return 0; // Asumiendo que la clase es 0
-                        }
-                      }
-                    } else {
-                      return 10;
-                    }
-                  } else {
-                    return 10;
-                  }
-                }
-              } else {
-                return 0;
-              }
-            } else {
-              return 0;
-            }
+            if (IMC <= 24.30)
+              return 10.13882596;
+            else
+              return 11.33274658;
           }
         }
       } else {
-        if (genero <= 0.39) {
-          return 5;
-        } else {
-          return 0;
-        }
+        if (GrasaVisceral <= 4.82) {
+          if (Peso <= 50.56)
+            return 15.78270056;
+          else {
+            if (GrasaVisceral <= 3.04)
+              return 9.16494345;
+            else
+              return 12.04795312;
+          }
+        } else
+          return 25.82548498;
       }
     } else {
-      if (grasaVisc <= 3.52) {
-        if (grasaVisc <= 0.54) {
-          if (grasaVisc <= 0.16) {
-            if (peso <= 0.82) {
-              if (musculo <= -0.75) {
-                if (metabBasal <= -0.23) {
-                  return 5;
-                } else {
-                  if (edad <= -0.46) {
-                    return 5;
-                  } else {
-                    return 0;
-                  }
-                }
-              } else {
-                if (imc <= -0.53) {
-                  if (edad <= -0.80) {
-                    return 5;
-                  } else {
-                    if (grasaVisc <= -0.66) {
-                      return 5;
-                    } else {
-                      return 0;
-                    }
-                  }
-                } else {
-                  if (talla <= -0.66) {
-                    return 0;
-                  } else {
-                    if (edad <= -0.58) {
-                      return 5;
-                    } else {
-                      return 5;
-                    }
-                  }
-                }
-              }
-            } else {
-              if (musculo <= -0.08) {
-                return 0;
-              } else {
-                return 5;
-              }
-            }
-          } else {
-            if (grasaT <= 1.51) {
-              if (talla <= 0.21) {
-                if (imc <= 1.31) {
-                  if (genero <= 0.39) {
-                    if (talla <= -0.38) {
-                      if (talla <= -0.58) {
-                        if (grasaVisc <= 0.50) {
-                          return 0;
-                        } else {
-                          return 5;
-                        }
-                      } else {
-                        return 5;
-                      }
-                    } else {
-                      return 0;
-                    }
-                  } else {
-                    return 5;
-                  }
-                } else {
-                  if (grasaT <= 1.37) {
-                    return 0;
-                  } else {
-                    return 10;
-                  }
-                }
-              } else {
-                if (grasaT <= -1.04) {
-                  return 0;
-                } else {
-                  if (edad <= -0.40) {
-                    if (grasaT <= -0.82) {
-                      return 5;
-                    } else {
-                      if (grasaVisc <= 0.33) {
-                        return 5;
-                      } else {
-                        return 0;
-                      }
-                    }
-                  } else {
-                    if (edad <= 1.65) {
-                      return 5;
-                    } else {
-                      return 10;
-                    }
-                  }
-                }
-              }
-            } else {
-              return 5;
-            }
-          }
+      if (Peso <= 69.00)
+        return 32.42158015;
+      else {
+        if (GrasaVisceral <= 13.69) {
+          if (Edad <= 21.48) {
+            if (MetabBasal <= 1460.27)
+              return 13.4277745;
+            else
+              return 10.86314948;
+          } else
+            return 16.86646289;
         } else {
-          if (metabBasal <= -0.10) {
-            if (grasaT <= 1.23) {
-              return 0;
-            } else {
-              return 10;
-            }
-          } else {
-            if (peso <= 2.47) {
-              if (peso <= 0.45) {
-                if (metabBasal <= 0.84) {
-                  return 0;
-                } else {
-                  if (peso <= 0.41) {
-                    return 5;
-                  } else {
-                    return 0;
-                  }
-                }
-              } else {
-                if (talla <= 3.02) {
-                  if (grasaVisc <= 2.98) {
-                    if (edad <= 1.56) {
-                      if (grasaVisc <= 0.63) {
-                        if (peso <= 1.12) {
-                          return 10;
-                        } else {
-                          // truncated branch of depth 2
-                          return 0; // Asumiendo que la clase es 0
-                        }
-                      } else {
-                        if (peso <= 0.53) {
-                          return 5;
-                        } else {
-                          return 5;
-                        }
-                      }
-                    } else {
-                      return 5;
-                    }
-                  } else {
-                    return 0;
-                  }
-                } else {
-                  return 0;
-                }
-              }
-            } else {
-              if (grasaVisc <= 3.10) {
-                return 0;
-              } else {
-                return 5;
-              }
-            }
-          }
+          if (Peso <= 108.15) {
+            if (Musculo <= 30.16)
+              return 16.72637142;
+            else
+              return 14.90399254;
+          } else
+            return 19.66379629;
         }
-      } else {
-        return 10;
       }
     }
+  }
+
+  List<double> calcularClasificacion(
+      int Edad,
+      int Sexo,
+      double Peso,
+      double Talla,
+      double Musculo,
+      double GrasaTotal,
+      double IMC,
+      double GrasaVisc,
+      double MetabBasal) {
+    if (Peso <= 64.81 && Talla <= 173.29) {
+      if (Talla <= 154.95) {
+        if (Peso <= 62.28) {
+          if (Peso <= 56.46) {
+            if (MetabBasal <= 1080.16)
+              return [1.0, 0.0, 0.0];
+            else {
+              if (Talla <= 145.40)
+                return [1.0, 0.0, 0.0];
+              else {
+                if (MetabBasal <= 1166.47) {
+                  if (GrasaTotal <= 34.43) {
+                    if (Edad <= 18.18) {
+                      if (Peso <= 48.10)
+                        return [1.0, 0.0, 0.0];
+                      else {
+                        if (GrasaTotal <= 31.90)
+                          return [0.25, 0.75, 0.0];
+                        else
+                          return [1.0, 0.0, 0.0];
+                      }
+                    } else {
+                      if (Peso <= 45.63) {
+                        if (Edad <= 20.50)
+                          return [0.0, 1.0, 0.0];
+                        else
+                          return [1.0, 0.0, 0.0];
+                      } else {
+                        if (Peso <= 49.25) {
+                          if (Musculo <= 25.08)
+                            return [0.0, 1.0, 0.0];
+                          else {
+                            if (MetabBasal <= 1158.86)
+                              return [1.0, 0.0, 0.0];
+                            else
+                              return [0.0, 1.0, 0.0];
+                          }
+                        } else
+                          return [0.0, 1.0, 0.0];
+                      }
+                    }
+                  } else
+                    return [0.0, 1.0, 0.0];
+                } else {
+                  if (MetabBasal <= 1185.66) {
+                    if (Talla <= 149.11)
+                      return [0.0, 1.0, 0.0];
+                    else {
+                      if (Talla <= 152.75)
+                        return [1.0, 0.0, 0.0];
+                      else
+                        return [0.8, 0.2, 0.0];
+                    }
+                  } else {
+                    if (MetabBasal <= 1196.25)
+                      return [0.0, 1.0, 0.0];
+                    else {
+                      if (Talla <= 152.34) {
+                        if (Talla <= 150.21)
+                          return [1.0, 0.0, 0.0];
+                        else
+                          return [0.0, 1.0, 0.0];
+                      } else
+                        return [1.0, 0.0, 0.0];
+                    }
+                  }
+                }
+              }
+            }
+          } else {
+            if (Edad <= 21.07) {
+              if (IMC <= 27.86) {
+                if (Talla <= 153.44)
+                  return [1.0, 0.0, 0.0];
+                else
+                  return [0.8, 0.2, 0.0];
+              } else
+                return [0.0, 1.0, 0.0];
+            } else
+              return [0.0, 0.0, 1.0];
+          }
+        } else {
+          if (GrasaVisc <= 5.56) return [0.0, 1.0, 0.0];
+        }
+      }
+    }
+    return [0.0, 0.0, 0.0]; // Valor por defecto
   }
 }
