@@ -14,9 +14,9 @@ class HeartWiseApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'HeartWise',
-      home: WelcomeScreen(),
+      //home: WelcomeScreen(),
       //home: home_screen(),
-      //home: EvaluacionCorporalScreen(),
+      home: EvaluacionCorporalScreen(),
     );
   }
 }
