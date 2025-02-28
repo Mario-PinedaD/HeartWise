@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:heartwise/view/evaluacion_corporal.dart';
 
+// ignore: camel_case_types
 class home_screen extends StatelessWidget {
 
   final List<Map<String, dynamic>> datos = [
     {'titulo': 'Evaluación Corporal Básica',
       'descripcion': 'Evalúa tus parámetros físicos clave, como peso, IMC y composición corporal para un control básico de tu salud.',
       'disponible': true,
-      'direc': EvaluacionCorporalScreen()},
+      'direc': const EvaluacionCorporalScreen()},
     {'titulo': 'Análisis Clínico Integral',
       'descripcion': 'Evalúa tus parámetros físicos clave, como peso, IMC y composición corporal para un control básico de tu salud.',
       'disponible': false,
@@ -18,19 +19,21 @@ class home_screen extends StatelessWidget {
       'disponible': false,
       'direc': null},
   ];
+
+  home_screen({super.key});
   @override
   Widget build(BuildContext context) {
     //Para el alto del carrusel
     double carruselHeight = (MediaQuery.of(context).size.height)* 0.5;
-    double carruselHeightMin = carruselHeight - 30;
+    //double carruselHeightMin = carruselHeight - 30;
 
     //Para el ancho del carrusel
     double carruselWidth = (MediaQuery.of(context).size.width) * 0.75;
-    double carruselWidthMin = carruselWidth - 30;
+    //double carruselWidthMin = carruselWidth - 30;
 
 
     return Scaffold(
-      backgroundColor: Color(0xFFD9D9D9),
+      backgroundColor: const Color(0xFFD9D9D9),
       body: Padding(
         padding: const EdgeInsets.only(top: 40.0,
             left: 20,
@@ -62,13 +65,13 @@ class home_screen extends StatelessWidget {
                       ),
                     )],
                 ),
-                Spacer(),
+                const Spacer(),
                 Image.asset('lib/sources/heart-red.png',
                     width: 50, height: 50, fit: BoxFit.contain, alignment: Alignment.bottomCenter,),
               ],
             ),
 
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Text(
               'Pruebas de Estudio \nCardiovasculares',
               style: GoogleFonts.poppins(
@@ -86,7 +89,7 @@ class home_screen extends StatelessWidget {
                   final item = datos[index];
                   return Container(
                     width: carruselWidth,
-                    margin: EdgeInsets.symmetric(horizontal: 10),
+                    margin: const EdgeInsets.symmetric(horizontal: 10),
                     child: _buildCardPrueba(
                         context: context,
                         titulo: item['titulo'],
@@ -133,7 +136,7 @@ class home_screen extends StatelessWidget {
         )
       ),
       elevation: 20, //Esto es lo que le da la sombra coqueta
-      color: Color(0xFFDC3644),
+      color: const Color(0xFFDC3644),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child:
@@ -152,11 +155,11 @@ class home_screen extends StatelessWidget {
                 'Disponible',
                 style: GoogleFonts.poppins(
                   fontSize: 14,
-                  color: Color(0xFFDC3644),
+                  color: const Color(0xFFDC3644),
                 ),
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text(
               titulo,
               style: GoogleFonts.poppins(
@@ -165,12 +168,12 @@ class home_screen extends StatelessWidget {
                 color: Colors.white,
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Card(
               elevation: 4,
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                color: Color(0xFFE54653),
+                color: const Color(0xFFE54653),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(descripcion, style: GoogleFonts.poppins(
@@ -181,7 +184,7 @@ class home_screen extends StatelessWidget {
                 ),
               ),
             ),
-            Spacer(),
+            const Spacer(),
             Align(
               alignment: Alignment.center,
                 child: Text('Realizar',
@@ -193,7 +196,7 @@ class home_screen extends StatelessWidget {
                   ),
                 ),
               ),
-            SizedBox(height: 20,),
+            const SizedBox(height: 20,),
           ],
         ),
       ),
@@ -225,7 +228,7 @@ class home_screen extends StatelessWidget {
                   ),
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text(
               titulo,
               style: GoogleFonts.poppins(
@@ -233,11 +236,12 @@ class home_screen extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Card(
                 elevation: 4,
               child: DecoratedBox(
                 decoration: BoxDecoration(
+                  // ignore: deprecated_member_use
                   color: Colors.grey.withOpacity(.5),
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -248,18 +252,19 @@ class home_screen extends StatelessWidget {
                 ),
               ),
             ),
-            Spacer(),
+            const Spacer(),
             Align(
               alignment: Alignment.center,
               child: Text('Acude al médico',
                   style: GoogleFonts.poppins(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
+                      // ignore: deprecated_member_use
                       backgroundColor: Colors.transparent.withOpacity(0),
                   ),
                 ),
             ),
-            SizedBox(height: 20,),
+            const SizedBox(height: 20,),
           ],
         ),
       ),

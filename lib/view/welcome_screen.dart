@@ -3,6 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'login_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
+  const WelcomeScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     //Se toma el ancho de la pantalla para después calcular el ancho del button
@@ -11,14 +13,14 @@ class WelcomeScreen extends StatelessWidget {
     double buttonWidth = screenWidth * 0.6;
 
     return Scaffold(
-      backgroundColor:Color(0xFFDC3644),
+      backgroundColor:const Color(0xFFDC3644),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
+              const Text(
                 'HeartWise',
                 style: TextStyle(
                   fontSize: 28,
@@ -26,7 +28,7 @@ class WelcomeScreen extends StatelessWidget {
                   color: Colors.white,
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Text(
                 'Detección temprana de riesgos\ncardiovasculares con IA',
                 textAlign: TextAlign.center,
@@ -35,14 +37,14 @@ class WelcomeScreen extends StatelessWidget {
                   color:Colors.white
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               //Icon(Icons.favorite, color: Colors.white, size: 100),
               Image.asset('lib/sources/heart.png',
                 width: 200,
                 height: 200,
                 fit: BoxFit.contain
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
               // ElevatedButton(
               //   style: ElevatedButton.styleFrom(
               //     backgroundColor: Colors.transparent,
@@ -56,7 +58,7 @@ class WelcomeScreen extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white.withOpacity(0.2), //Opacidad blanca
                     foregroundColor: Colors.white,
-                    side: BorderSide(color: Colors.white),
+                    side: const BorderSide(color: Colors.white),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),

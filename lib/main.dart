@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:heartwise/view/evaluacion_corporal.dart';
-import 'package:heartwise/view/home_screen.dart';
-import 'package:heartwise/view/welcome_screen.dart';
+//import 'package:heartwise/view/home_screen.dart';
+//import 'package:heartwise/view/welcome_screen.dart';
 //import 'package:heartwise/view/home_screen.dart'
 
 void main() {
-  runApp(HeartWiseApp());
+  runApp(const HeartWiseApp());
 }
 
 class HeartWiseApp extends StatelessWidget {
+  const HeartWiseApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'HeartWise',
       //home: WelcomeScreen(),

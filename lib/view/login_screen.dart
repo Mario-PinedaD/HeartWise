@@ -5,6 +5,8 @@ import 'package:heartwise/view/crear_cuenta.dart';
 import 'package:heartwise/view/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   _LoginScreen createState() => _LoginScreen();
 }
@@ -12,7 +14,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreen extends State<LoginScreen> {
 
   bool _isPasswordVisible = false;
-  TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +24,7 @@ class _LoginScreen extends State<LoginScreen> {
     double buttonWidth = screenWidth * 0.6;
 
     return Scaffold(
-      backgroundColor: Color(0xFFDC3644),
+      backgroundColor: const Color(0xFFDC3644),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -31,7 +33,7 @@ class _LoginScreen extends State<LoginScreen> {
           children: [
             Image.asset('lib/sources/heart.png',
                 width: 50, height: 50, fit: BoxFit.contain),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Text(
               'Iniciar Sesión',
               textAlign: TextAlign.center,
@@ -40,7 +42,7 @@ class _LoginScreen extends State<LoginScreen> {
                   fontWeight: FontWeight.bold,
                   color: Colors.white),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Card(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
@@ -57,7 +59,7 @@ class _LoginScreen extends State<LoginScreen> {
                           fontWeight: FontWeight.bold,
                           color: Colors.grey.shade500),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     TextField(
@@ -74,13 +76,13 @@ class _LoginScreen extends State<LoginScreen> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.blue),
+                            borderSide: const BorderSide(color: Colors.blue),
                             borderRadius: BorderRadius.circular(12)),
                         fillColor: Colors.white.withOpacity(0.1),
                         filled: true,
                       ),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     TextField(
                       controller: _passwordController,
                       obscureText: !_isPasswordVisible,
@@ -110,7 +112,7 @@ class _LoginScreen extends State<LoginScreen> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.blue),
+                            borderSide: const BorderSide(color: Colors.blue),
                             borderRadius: BorderRadius.circular(12)),
                         fillColor: Colors.white.withOpacity(0.1),
                         filled: true,
@@ -134,13 +136,13 @@ class _LoginScreen extends State<LoginScreen> {
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white.withOpacity(0.2),
                   //Opacidad blanca
                   foregroundColor: Colors.white,
-                  side: BorderSide(color: Colors.white),
+                  side: const BorderSide(color: Colors.white),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -165,7 +167,7 @@ class _LoginScreen extends State<LoginScreen> {
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             TextButton(

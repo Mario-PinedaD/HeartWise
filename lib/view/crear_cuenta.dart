@@ -6,6 +6,8 @@ import 'package:heartwise/view/login_screen.dart';
 
 //class RegisterScreen extends StatelessWidget {
 class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
+
   @override
   _RegisterScreenState createState() => _RegisterScreenState();
 }
@@ -13,11 +15,11 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen>{
   String? selectedGender; //Para el genero seleccionado
   bool _isPasswordVisible = false;
-  TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFDC3644),
+      backgroundColor: const Color(0xFFDC3644),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -26,7 +28,7 @@ class _RegisterScreenState extends State<RegisterScreen>{
           children: [
             Image.asset('lib/sources/heart.png',
                 width: 50, height: 50, fit: BoxFit.contain),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Text(
               'Crear una Cuenta',
               style: GoogleFonts.inder(
@@ -36,7 +38,7 @@ class _RegisterScreenState extends State<RegisterScreen>{
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Card(
               color: Colors.white,
               shape: RoundedRectangleBorder(
@@ -52,7 +54,7 @@ class _RegisterScreenState extends State<RegisterScreen>{
                           fontWeight: FontWeight.bold,
                           color: Colors.grey),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     TextField(
                       decoration: InputDecoration(
                         labelText: 'Nombre Completo',
@@ -67,13 +69,13 @@ class _RegisterScreenState extends State<RegisterScreen>{
                           borderRadius: BorderRadius.circular(12),
                         ),
                         focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.blue),
+                            borderSide: const BorderSide(color: Colors.blue),
                             borderRadius: BorderRadius.circular(12)),
                         fillColor: Colors.white.withOpacity(0.1),
                         filled: true,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     TextField(
@@ -90,13 +92,13 @@ class _RegisterScreenState extends State<RegisterScreen>{
                           borderRadius: BorderRadius.circular(12),
                         ),
                         focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.blue),
+                            borderSide: const BorderSide(color: Colors.blue),
                             borderRadius: BorderRadius.circular(12)),
                         fillColor: Colors.white.withOpacity(0.1),
                         filled: true,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     Row(
@@ -117,14 +119,14 @@ class _RegisterScreenState extends State<RegisterScreen>{
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.blue),
+                                  borderSide: const BorderSide(color: Colors.blue),
                                   borderRadius: BorderRadius.circular(12)),
                               fillColor: Colors.white.withOpacity(0.1),
                               filled: true,
                             ),
                           ),
                         ),
-                        SizedBox(width: 20),
+                        const SizedBox(width: 20),
                         //Expanded(child: TextField(decoration: InputDecoration(labelText: 'Sexo'))),
                         Expanded(
                           child: DropdownButton<String>(
@@ -137,8 +139,8 @@ class _RegisterScreenState extends State<RegisterScreen>{
                                   color: Colors.black),
                             ),
                             dropdownColor: Colors.white,
-                            icon: Icon(Icons.arrow_drop_down, color: Colors.black),
-                            underline: SizedBox(),
+                            icon: const Icon(Icons.arrow_drop_down, color: Colors.black),
+                            underline: const SizedBox(),
                             style: GoogleFonts.inder(
                                 fontSize: 16,
                                 color: Colors.black
@@ -160,7 +162,7 @@ class _RegisterScreenState extends State<RegisterScreen>{
                         )
                       ],
                     ),
-                    SizedBox(height: 20,),
+                    const SizedBox(height: 20,),
                     TextField(
                       controller: _passwordController,
                       obscureText: !_isPasswordVisible,
@@ -190,7 +192,7 @@ class _RegisterScreenState extends State<RegisterScreen>{
                           borderRadius: BorderRadius.circular(12),
                         ),
                         focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.blue),
+                            borderSide: const BorderSide(color: Colors.blue),
                             borderRadius: BorderRadius.circular(12)),
                         fillColor: Colors.white.withOpacity(0.1),
                         filled: true,
@@ -200,18 +202,18 @@ class _RegisterScreenState extends State<RegisterScreen>{
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white.withOpacity(0.2),
                   //Opacidad blanca
                   foregroundColor: Colors.white,
-                  side: BorderSide(color: Colors.white),
+                  side: const BorderSide(color: Colors.white),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                   elevation: 0,
-                  minimumSize: Size(10, 60)),
+                  minimumSize: const Size(10, 60)),
               onPressed: () {
                 Navigator.push(
                   context,
@@ -234,9 +236,9 @@ class _RegisterScreenState extends State<RegisterScreen>{
             TextButton(
               onPressed: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => LoginScreen()));
+                    MaterialPageRoute(builder: (context) => const LoginScreen()));
               },
-              child: Text('Ya tienes una cuenta? Inicia Sesión',
+              child: const Text('Ya tienes una cuenta? Inicia Sesión',
                   style: TextStyle(color: Colors.white)),
             ),
           ],

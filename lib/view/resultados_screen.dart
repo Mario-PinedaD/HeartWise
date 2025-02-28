@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ResultadosScreen extends StatefulWidget {
+  const ResultadosScreen({super.key});
+
   @override
   _ResultadosScreenState createState() => _ResultadosScreenState();
 }
@@ -15,7 +17,7 @@ class _ResultadosScreenState  extends State<ResultadosScreen> with SingleTickerP
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 1000),
+      duration: const Duration(milliseconds: 1000),
     )..repeat(reverse: true);
 
     _animation = Tween<double>(begin: 1.0, end: 1.3).animate(
@@ -36,16 +38,16 @@ class _ResultadosScreenState  extends State<ResultadosScreen> with SingleTickerP
         backgroundColor: Colors.red.shade700,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               "RESULTADOS",
               style: TextStyle(
                 fontSize: 24,
@@ -53,21 +55,21 @@ class _ResultadosScreenState  extends State<ResultadosScreen> with SingleTickerP
                 color: Colors.white,
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Card(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
               elevation: 4,
               child: Padding(
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 child: Row(
                   children: [
                     ScaleTransition(scale: _animation,
                     child: Image.asset('lib/sources/heart-black.png',
                       width: 50, height: 50, fit: BoxFit.contain, alignment: Alignment.bottomCenter,),)
                     ,
-                    SizedBox(width: 16),
+                    const SizedBox(width: 16),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -75,7 +77,7 @@ class _ResultadosScreenState  extends State<ResultadosScreen> with SingleTickerP
                           "Niveles de Homocisteína",
                           style: GoogleFonts.poppins(fontSize: 16,fontWeight: FontWeight.bold)
                         ),
-                        Text(
+                        const Text(
                           "15 µmol/L",
                           style: TextStyle(
                             fontSize: 28,
@@ -88,8 +90,8 @@ class _ResultadosScreenState  extends State<ResultadosScreen> with SingleTickerP
                 ),
               ),
             ),
-            SizedBox(height: 16),
-            Text(
+            const SizedBox(height: 16),
+            const Text(
               "Paciente",
               style: TextStyle(
                 fontSize: 18,
@@ -97,7 +99,7 @@ class _ResultadosScreenState  extends State<ResultadosScreen> with SingleTickerP
                 color: Colors.white,
               ),
             ),
-            Row(
+            const Row(
               children: [
                 Icon(Icons.person, color: Colors.white),
                 SizedBox(width: 8),
@@ -107,8 +109,8 @@ class _ResultadosScreenState  extends State<ResultadosScreen> with SingleTickerP
                 ),
               ],
             ),
-            SizedBox(height: 16),
-            Text(
+            const SizedBox(height: 16),
+            const Text(
               "Detalles de Resultados",
               style: TextStyle(
                 fontSize: 18,
@@ -116,7 +118,7 @@ class _ResultadosScreenState  extends State<ResultadosScreen> with SingleTickerP
                 color: Colors.white,
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -126,16 +128,16 @@ class _ResultadosScreenState  extends State<ResultadosScreen> with SingleTickerP
                 _buildResultCard("Grasa Visceral", "00"),
               ],
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Text(
               "Tu nivel de Homocisteína depende de la información introducida. De ser como resultado un valor alto, te recomendamos acudir a un médico para realizar pruebas más detalladas.",
               style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.bold,color: Colors.white),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             ElevatedButton.icon(
               onPressed: () {},
-              icon: Icon(Icons.medical_services, color: Colors.black),
-              label: Text(
+              icon: const Icon(Icons.medical_services, color: Colors.black),
+              label: const Text(
                 "Doctores Disponibles",
                 style: TextStyle(color: Colors.black),
               ),
@@ -165,7 +167,7 @@ class _ResultadosScreenState  extends State<ResultadosScreen> with SingleTickerP
           child: Center(
             child: Text(
               value,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
@@ -173,13 +175,13 @@ class _ResultadosScreenState  extends State<ResultadosScreen> with SingleTickerP
             ),
           ),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         SizedBox(
           width: 70, // Limita el ancho al del círculo
           child: Text(
             title,
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 12, color: Colors.white),
+            style: const TextStyle(fontSize: 12, color: Colors.white),
             maxLines: 1, // Limita el texto a una sola línea
             overflow: TextOverflow.visible, // Muestra "..."
           ),
