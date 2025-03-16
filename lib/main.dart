@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:heartwise/view/evaluacion_corporal.dart';
+//import 'package:heartwise/view/evaluacion_corporal.dart';
 //import 'package:heartwise/view/home_screen.dart';
-//import 'package:heartwise/view/welcome_screen.dart';
+import 'package:heartwise/view/welcome_screen.dart';
 //import 'package:heartwise/view/home_screen.dart'
+import 'package:heartwise/view/analisis_clinico.dart';
+import 'package:heartwise/view/perfil_genetico.dart';
 
 void main() {
   runApp(const HeartWiseApp());
@@ -18,7 +20,9 @@ class HeartWiseApp extends StatelessWidget {
       title: 'HeartWise',
       //home: WelcomeScreen(),
       //home: home_screen(),
-      home: EvaluacionCorporalScreen(),
+      //home: EvaluacionCorporalScreen(),
+      //home: AnalisisClinicoScreen(),
+      home: PerfilGeneticoScreen(),
     );
   }
 }
