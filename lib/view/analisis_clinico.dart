@@ -3,18 +3,18 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:heartwise/view/resultados_screen.dart';
 //import 'package:intl/intl.dart';
 
-class EvaluacionCorporalScreen extends StatefulWidget {
-  const EvaluacionCorporalScreen({super.key});
+class AnalisisClinicoScreen extends StatefulWidget {
+  const AnalisisClinicoScreen({super.key});
 
   @override
   // ignore: library_private_types_in_public_api
-  _EvaluacionCorporalScreen createState() => _EvaluacionCorporalScreen();
+  _AnalisisClinicoScreen createState() => _AnalisisClinicoScreen();
 }
 
-class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
+class _AnalisisClinicoScreen extends State<AnalisisClinicoScreen> {
   DateTime? _fechaSeleccionada;
   int?
-      edad; // Esta será calcularda con: Fecha nacimiento - fecha actual (obteniendo solo el año)
+  edad; // Esta será calcularda con: Fecha nacimiento - fecha actual (obteniendo solo el año)
   String? _selectedGender;
   int? genero; //1 = Hombre | 2 = Mujer
   double? peso; //Peso, no sabes leer o q?
@@ -25,6 +25,13 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
   double? imc;
   double? grasaVisc;
   double? musculo;
+  double? colesterol;
+  double? trigliceridos;
+  double? hdl;
+  double? ldl;
+  double? vldl;
+  double? hcy;
+  double? hcy_level;
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +57,7 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Evaluación Corporal Básica',
+                        'Análisis Clínico Integral',
                         style: GoogleFonts.poppins(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -59,11 +66,10 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'La Evaluación Corporal Básica ofrece un análisis esencial de los principales indicadores físicos y '
-                        'de composición corporal del usuario. Este test es ideal para obtener una visión rápida y '
-                        'sencilla del estado físico general. Con estos datos, el usuario puede comprender mejor '
-                        'su composición física y recibir alertas tempranas sobre posibles riesgos de salud '
-                        'relacionados con el peso o la grasa visceral.',
+                        'El Análisis Clínico Integral proporciona una evaluación completa de los principales indicadores de salud, '
+                            'incluyendo el funcionamiento de órganos, niveles de colesterol, glucosa, hormonas y más. '
+                            'Este perfil es ideal para obtener una visión detallada del estado de salud general y detectar posibles '
+                            'riesgos o alteraciones.',
                         style: GoogleFonts.poppins(
                           fontSize: 14,
                           color: Colors.white,
@@ -134,8 +140,8 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
                                 setState(() {
                                   _fechaSeleccionada = pickedDate;
                                   edad = DateTime.now()
-                                          .difference(_fechaSeleccionada!)
-                                          .inDays ~/
+                                      .difference(_fechaSeleccionada!)
+                                      .inDays ~/
                                       365;
                                 });
                               }
@@ -169,11 +175,11 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
                                   _fechaSeleccionada == null
                                       ? 'Edad'
                                       : (DateTime.now()
-                                                  .difference(
-                                                      _fechaSeleccionada!)
-                                                  .inDays ~/
-                                              365)
-                                          .toString(),
+                                      .difference(
+                                      _fechaSeleccionada!)
+                                      .inDays ~/
+                                      365)
+                                      .toString(),
                                 ),
                               ],
                             ),
@@ -259,7 +265,7 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
                           ElevatedButton.icon(
                             onPressed: () =>
                                 _showInputDialog(context, "Altura"),
-                                //_mostrarDialog(context,"Altura", altura, "cm", onValueChanged: (newValue){setState(() {altura = newValue;});}),
+                            //_mostrarDialog(context,"Altura", altura, "cm", onValueChanged: (newValue){setState(() {altura = newValue;});}),
                             icon: const Icon(
                               Icons.height,
                               color: Colors.white,
@@ -390,7 +396,7 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
                         height: 20,
                       ),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           ElevatedButton.icon(
                             onPressed: () =>
@@ -403,6 +409,187 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
                               metabBasal == null
                                   ? "Metabolismo"
                                   : "$metabBasal",
+                              style: GoogleFonts.poppins(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                            ),
+                          ),
+                          ElevatedButton.icon(
+                            onPressed: () =>
+                                _showInputDialog(context, "COL"),
+                            //_mostrarDialog(context,"Altura", altura, "cm", onValueChanged: (newValue){setState(() {altura = newValue;});}),
+                            icon: const Icon(
+                              Icons.science,
+                              color: Colors.white,
+                            ),
+                            label: Text(
+                              colesterol == null ? "COL" : "$colesterol",
+                              style: GoogleFonts.poppins(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          ElevatedButton.icon(
+                            onPressed: () =>
+                                _showInputDialog(context, "TRG"),
+                            icon: const Icon(
+                              Icons.science,
+                              color: Colors.white,
+                            ),
+                            label: Text(
+                              trigliceridos == null
+                                  ? "TRG"
+                                  : "$trigliceridos",
+                              style: GoogleFonts.poppins(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                            ),
+                          ),
+                          ElevatedButton.icon(
+                            onPressed: () =>
+                                _showInputDialog(context, "HDL"),
+                            //_mostrarDialog(context,"Altura", altura, "cm", onValueChanged: (newValue){setState(() {altura = newValue;});}),
+                            icon: const Icon(
+                              Icons.science,
+                              color: Colors.white,
+                            ),
+                            label: Text(
+                              hdl == null ? "HDL" : "$hdl",
+                              style: GoogleFonts.poppins(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          ElevatedButton.icon(
+                            onPressed: () =>
+                                _showInputDialog(context, "LDL"),
+                            icon: const Icon(
+                              Icons.science,
+                              color: Colors.white,
+                            ),
+                            label: Text(
+                              ldl == null
+                                  ? "LDL"
+                                  : "$ldl",
+                              style: GoogleFonts.poppins(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                            ),
+                          ),
+                          ElevatedButton.icon(
+                            onPressed: () =>
+                                _showInputDialog(context, "VLDL"),
+                            //_mostrarDialog(context,"Altura", altura, "cm", onValueChanged: (newValue){setState(() {altura = newValue;});}),
+                            icon: const Icon(
+                              Icons.science,
+                              color: Colors.white,
+                            ),
+                            label: Text(
+                              vldl == null ? "VLDL" : "$vldl",
+                              style: GoogleFonts.poppins(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          ElevatedButton.icon(
+                            onPressed: () =>
+                                _showInputDialog(context, "HCY"),
+                            icon: const Icon(
+                              Icons.science,
+                              color: Colors.white,
+                            ),
+                            label: Text(
+                              hcy == null
+                                  ? "HCY"
+                                  : "$hcy",
+                              style: GoogleFonts.poppins(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                            ),
+                          ),
+                          ElevatedButton.icon(
+                            onPressed: () =>
+                                _showInputDialog(context, "Nivel de HCY"),
+                            //_mostrarDialog(context,"Altura", altura, "cm", onValueChanged: (newValue){setState(() {altura = newValue;});}),
+                            icon: const Icon(
+                              Icons.science,
+                              color: Colors.white,
+                            ),
+                            label: Text(
+                              hcy_level == null ? "Nivel de HCY" : "$hcy_level",
                               style: GoogleFonts.poppins(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -540,12 +727,12 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
   }
 
   void _mostrarDialog(
-    BuildContext context,
-    String titulo,
-    double variable,
-    String unidad,
-    ValueChanged<double> onValueChanged,
-  ) {
+      BuildContext context,
+      String titulo,
+      double variable,
+      String unidad,
+      ValueChanged<double> onValueChanged,
+      ) {
     TextEditingController controller = TextEditingController(text: variable.toString());
 
     showDialog(
@@ -597,7 +784,7 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               ),
               child: Text(
                 "Aceptar",
@@ -666,8 +853,22 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
                       imc = value;
                     } else if (type == "Grasa Visceral") {
                       grasaVisc = value;
-                    } else {
+                    } else if (type == "Metabolismo") {
                       metabBasal = value;
+                    } else if (type == "COL") {
+                      colesterol = value;
+                    } else if (type == "TRG") {
+                      trigliceridos = value;
+                    } else if (type == "HDL") {
+                      hdl = value;
+                    } else if (type == "LDL") {
+                      ldl = value;
+                    } else if (type == "VLDL") {
+                      vldl = value;
+                    } else if (type == "HCY") {
+                      hcy = value;
+                    } else {
+                      hcy_level = value;
                     }
                   });
                   Navigator.pop(context);
