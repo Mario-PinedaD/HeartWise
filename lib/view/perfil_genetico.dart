@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names, avoid_print, unused_element
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:heartwise/view/resultados_screen.dart';
@@ -700,7 +702,7 @@ class _PerfilGeneticoScreen extends State<PerfilGeneticoScreen> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => ResultadosScreen()));
+                                  builder: (context) => ResultadosScreen(dato1: "", dato2: "")));
                           /*print(edad);
                           print(genero);
                           print(peso);

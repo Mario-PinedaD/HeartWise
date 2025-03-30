@@ -1,26 +1,22 @@
+// ignore_for_file: use_key_in_widget_constructors, implementation_imports, prefer_const_constructors_in_immutables
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:heartwise/view/evaluacion_corporal.dart';
+import 'package:mysql1/src/single_connection.dart';
 
 // ignore: camel_case_types
 class home_screen extends StatelessWidget {
 
-  final List<Map<String, dynamic>> datos = [
-    {'titulo': 'Evaluación Corporal Básica',
-      'descripcion': 'Evalúa tus parámetros físicos clave, como peso, IMC y composición corporal para un control básico de tu salud.',
-      'disponible': true,
-      'direc': const EvaluacionCorporalScreen()},
-    {'titulo': 'Análisis Clínico Integral',
-      'descripcion': 'Evalúa tus parámetros físicos clave, como peso, IMC y composición corporal para un control básico de tu salud.',
-      'disponible': false,
-      'direc': null},
-    {'titulo': 'Perfil Genético Avanzado',
-      'descripcion': 'Analiza tu ADN y metabolismo para una evaluación profunda de salud, enfocada en la prevención de enfermedades a nivel molecular.',
-      'disponible': false,
-      'direc': null},
-  ];
+  //final Results? userInfo;
+  final Map<String, dynamic>? userInfo;
+  home_screen({super.key, this.userInfo});
 
-  home_screen({super.key});
+
+  // home_screen({super.key, this.userInfo}) {
+  //   print(userInfo);
+  // }
+
   @override
   Widget build(BuildContext context) {
     //Para el alto del carrusel
@@ -31,6 +27,27 @@ class home_screen extends StatelessWidget {
     double carruselWidth = (MediaQuery.of(context).size.width) * 0.75;
     //double carruselWidthMin = carruselWidth - 30;
 
+    Map<String, dynamic> userInfoMap = {};
+    if (userInfo != null) {
+      userInfo?.forEach((key, value) {
+        userInfoMap[key] = value;
+      });
+    }
+
+    final List<Map<String, dynamic>> datos = [
+    {'titulo': 'Evaluación Corporal Básica',
+      'descripcion': 'Evalúa tus parámetros físicos clave, como peso, IMC y composición corporal para un control básico de tu salud.',
+      'disponible': true,
+      'direc': EvaluacionCorporalScreen(userData: userInfoMap)},
+    {'titulo': 'Análisis Clínico Integral',
+      'descripcion': 'Evalúa tus parámetros físicos clave, como peso, IMC y composición corporal para un control básico de tu salud.',
+      'disponible': false,
+      'direc': null},
+    {'titulo': 'Perfil Genético Avanzado',
+      'descripcion': 'Analiza tu ADN y metabolismo para una evaluación profunda de salud, enfocada en la prevención de enfermedades a nivel molecular.',
+      'disponible': false,
+      'direc': null},
+  ];
 
     return Scaffold(
       backgroundColor: const Color(0xFFD9D9D9),
@@ -50,7 +67,7 @@ class home_screen extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [Text(
-                    'Usuario hermoso precioso',
+                    '${userInfoMap['nombre']}',
                     style: GoogleFonts.inder(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,

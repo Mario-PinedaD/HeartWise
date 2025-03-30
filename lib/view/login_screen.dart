@@ -1,8 +1,11 @@
 // login_screen.dart
+// ignore_for_file: deprecated_member_use, use_build_context_synchronously, library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:heartwise/view/crear_cuenta.dart';
 import 'package:heartwise/view/home_screen.dart';
+import 'package:heartwise/service/database_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -15,6 +18,7 @@ class _LoginScreen extends State<LoginScreen> {
 
   bool _isPasswordVisible = false;
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -63,6 +67,7 @@ class _LoginScreen extends State<LoginScreen> {
                       height: 20,
                     ),
                     TextField(
+                      controller: _emailController,
                       decoration: InputDecoration(
                         labelText: 'Correo Electrónico',
                         labelStyle: GoogleFonts.inter(
@@ -148,11 +153,47 @@ class _LoginScreen extends State<LoginScreen> {
                   ),
                   elevation: 0,
                   minimumSize: Size(buttonWidth, 60)),
-              onPressed: () {
-                Navigator.push(
-                   context,
-                   MaterialPageRoute(builder: (context) => home_screen()),
-                 );
+              onPressed: () async {
+                String email = _emailController.text;
+                String password = _passwordController.text;
+
+                print("Email: $email, Password: $password");
+
+
+                if (email.isNotEmpty && password.isNotEmpty) {
+                  final result = await DatabaseService.enviarUsuario(
+                    {'email': email, 'password': password},
+                  );
+
+                  // Mostrar mensaje de resultado en la pantalla
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Resultado enviado, respuesta: $result')),
+                  );
+
+                  if (result != null && result['usuario'] != null) {
+                    // Extrae el usuario del resultado
+                    Map<String, dynamic> userInfo = result['usuario'];
+                    //Muestra un mensaje en la pantalla
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Inicio de sesión exitoso')),
+                    );
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => home_screen(userInfo: userInfo)),
+                    );
+
+                    print("Inicio de sesión exitoso: $userInfo");
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Usuario o contraseña incorrectos.')),
+                    );
+                  }
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Por favor, completa todos los campos.')),
+                  );
+                }
               },
               child: Padding(
                 padding:
@@ -173,7 +214,7 @@ class _LoginScreen extends State<LoginScreen> {
             TextButton(
               onPressed: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => RegisterScreen()));
+                    MaterialPageRoute(builder: (context) => const RegisterScreen()));
               },
               child: Text(
                 'No tienes una cuenta? Crear una',

@@ -1,8 +1,13 @@
+// ignore_for_file: library_private_types_in_public_api, unrelated_type_equality_checks
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ResultadosScreen extends StatefulWidget {
-  const ResultadosScreen({super.key});
+  final String? dato1;
+  final String? dato2;
+  final String? correo;
+  const ResultadosScreen({super.key, this.dato1, this.dato2, this.correo});
 
   @override
   _ResultadosScreenState createState() => _ResultadosScreenState();
@@ -32,6 +37,18 @@ class _ResultadosScreenState  extends State<ResultadosScreen> with SingleTickerP
   }
   @override
   Widget build(BuildContext context) {
+    String description = '';
+
+    if ("${widget.dato2}" == 'bajo') {
+      description = "Tu nivel de homocisteína se encuentra dentro del rango bajo. Esto sugiere un bajo riesgo de problemas de salud relacionados con la homocisteína. Sin embargo, es importante mantener un estilo de vida saludable y realizar chequeos regulares.";
+    } else if ("${widget.dato2}" == 'normal') {
+      description = "Tu nivel de homocisteína está normal. Sin embargo, esto podría indicar un riesgo moderado de problemas de salud relacionados con la homocisteína. Se recomienda hablar con tu médico para discutir posibles causas y medidas preventivas.";
+    } else if ("${widget.dato2}" == 'alto') {
+      description = "Tu nivel de homocisteína es alto. Esto indica un riesgo significativo de problemas de salud relacionados con la homocisteína. Te recomendamos encarecidamente que consultes a tu médico para realizar pruebas adicionales y determinar el tratamiento adecuado.";
+    } else {
+      description = "Nivel de homocisteína desconocido."; // Manejar casos inesperados
+    }
+
     return Scaffold(
       backgroundColor: Colors.red.shade700,
       appBar: AppBar(
@@ -77,9 +94,9 @@ class _ResultadosScreenState  extends State<ResultadosScreen> with SingleTickerP
                           "Niveles de Homocisteína",
                           style: GoogleFonts.poppins(fontSize: 16,fontWeight: FontWeight.bold)
                         ),
-                        const Text(
-                          "15 µmol/L",
-                          style: TextStyle(
+                        Text(
+                          "${widget.dato1} µmol/L",
+                          style: const TextStyle(
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
                           ),
@@ -99,13 +116,13 @@ class _ResultadosScreenState  extends State<ResultadosScreen> with SingleTickerP
                 color: Colors.white,
               ),
             ),
-            const Row(
+            Row(
               children: [
-                Icon(Icons.person, color: Colors.white),
-                SizedBox(width: 8),
+                const Icon(Icons.person, color: Colors.white),
+                const SizedBox(width: 8),
                 Text(
-                  "Usuario Hermoso Precioso",
-                  style: TextStyle(fontSize: 16, color: Colors.white),
+                  "${widget.correo}",
+                  style: const TextStyle(fontSize: 16, color: Colors.white),
                 ),
               ],
             ),
@@ -130,7 +147,7 @@ class _ResultadosScreenState  extends State<ResultadosScreen> with SingleTickerP
             ),
             const SizedBox(height: 16),
             Text(
-              "Tu nivel de Homocisteína depende de la información introducida. De ser como resultado un valor alto, te recomendamos acudir a un médico para realizar pruebas más detalladas.",
+              description,
               style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.bold,color: Colors.white),
             ),
             const SizedBox(height: 16),

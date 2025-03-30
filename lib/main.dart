@@ -1,13 +1,23 @@
-import 'package:flutter/material.dart';
-//import 'package:heartwise/view/evaluacion_corporal.dart';
-//import 'package:heartwise/view/home_screen.dart';
-import 'package:heartwise/view/welcome_screen.dart';
-//import 'package:heartwise/view/home_screen.dart'
-import 'package:heartwise/view/analisis_clinico.dart';
-import 'package:heartwise/view/perfil_genetico.dart';
+// ignore_for_file: unused_import
 
-void main() {
-  runApp(const HeartWiseApp());
+import 'package:flutter/material.dart';
+import 'package:heartwise/view/crear_cuenta.dart';
+import 'package:heartwise/view/evaluacion_corporal.dart';
+//import 'package:heartwise/view/evaluacion_corporal.dart';
+import 'package:heartwise/view/home_screen.dart';
+//import 'package:heartwise/view/home_screen.dart'
+import 'package:heartwise/view/perfil_genetico.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+void main() async{
+  try {
+    await dotenv.load(fileName: ".env");
+    runApp(const HeartWiseApp());
+  } catch (e) {
+    print("Error cargando .env: $e");
+    // Continuar con la app incluso si no se carga el .env
+    runApp(const HeartWiseApp());
+  }
 }
 
 class HeartWiseApp extends StatelessWidget {
@@ -22,7 +32,7 @@ class HeartWiseApp extends StatelessWidget {
       //home: home_screen(),
       //home: EvaluacionCorporalScreen(),
       //home: AnalisisClinicoScreen(),
-      home: PerfilGeneticoScreen(),
+      home: RegisterScreen(),
     );
   }
 }

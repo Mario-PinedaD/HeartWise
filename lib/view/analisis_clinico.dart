@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print, non_constant_identifier_names, unused_element, duplicate_ignore
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:heartwise/view/resultados_screen.dart';
@@ -31,6 +33,7 @@ class _AnalisisClinicoScreen extends State<AnalisisClinicoScreen> {
   double? ldl;
   double? vldl;
   double? hcy;
+  // ignore: non_constant_identifier_names
   double? hcy_level;
 
   @override
@@ -613,7 +616,7 @@ class _AnalisisClinicoScreen extends State<AnalisisClinicoScreen> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => ResultadosScreen()));
+                                  builder: (context) => ResultadosScreen(dato1: "", dato2: "")));
                           /*print(edad);
                           print(genero);
                           print(peso);

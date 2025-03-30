@@ -1,0 +1,2 @@
+C:/Users/abrah/Dev/HeartWise/android/app/.cxx/RelWithDebInfo/2lvr1m6e/x86/CMakeFiles/edit_cache.dir
+C:/Users/abrah/Dev/HeartWise/android/app/.cxx/RelWithDebInfo/2lvr1m6e/x86/CMakeFiles/rebuild_cache.dir
