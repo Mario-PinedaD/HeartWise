@@ -49,6 +49,25 @@ class _ResultadosScreenState  extends State<ResultadosScreen> with SingleTickerP
       description = "Nivel de homocisteína desconocido."; // Manejar casos inesperados
     }
 
+    final List<Widget> ResultadosAnalisisClinicosv1 =[
+      _buildResultCard("COL", "00"),
+      _buildResultCard("TRG", "00"),
+      _buildResultCard("HDL", "00"),
+      _buildResultCard("LDL", "00"),
+    ];
+
+    final List<Widget> ResultadosAnalisisCrlinicosv2 = [
+      _buildResultCard("VLDL", "00"),
+      _buildResultCard("HCY", "00"),
+      _buildResultCard("HCY Level", "00"),
+    ];
+
+    final List<Widget> ResultadosGeneticos = [
+      _buildResultCard("ALU", "00"),
+      _buildResultCard("LINE", "00"),
+      _buildResultCard("SAT", "00"),
+    ];
+
     return Scaffold(
       backgroundColor: Colors.red.shade700,
       appBar: AppBar(
@@ -59,7 +78,7 @@ class _ResultadosScreenState  extends State<ResultadosScreen> with SingleTickerP
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -146,6 +165,28 @@ class _ResultadosScreenState  extends State<ResultadosScreen> with SingleTickerP
               ],
             ),
             const SizedBox(height: 16),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                for(var widget in ResultadosAnalisisClinicosv1) widget,
+              ],
+            ),
+            const SizedBox(height: 16),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                for(var widget in ResultadosAnalisisCrlinicosv2) widget,
+              ],
+            ),
+            const SizedBox(height: 16,),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                for(var widget in ResultadosGeneticos) widget,
+              ],
+            ),
             Text(
               description,
               style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.bold,color: Colors.white),

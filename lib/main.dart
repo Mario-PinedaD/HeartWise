@@ -8,6 +8,8 @@ import 'package:heartwise/view/home_screen.dart';
 //import 'package:heartwise/view/home_screen.dart'
 import 'package:heartwise/view/perfil_genetico.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:heartwise/view/resultados_screen.dart';
+import 'package:heartwise/view/perfil_genetico.dart';
 
 void main() async{
   try {
@@ -32,7 +34,8 @@ class HeartWiseApp extends StatelessWidget {
       //home: home_screen(),
       //home: EvaluacionCorporalScreen(),
       //home: AnalisisClinicoScreen(),
-      home: RegisterScreen(),
+      //home: RegisterScreen(),
+      home: ResultadosScreen(),
     );
   }
 }

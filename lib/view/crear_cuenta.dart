@@ -239,6 +239,28 @@ class _RegisterScreenState extends State<RegisterScreen>{
                         filled: true,
                       ),
                     ),
+                    const SizedBox(height: 20,),
+                    TextField(
+                      controller: _emailController,
+                      decoration: InputDecoration(
+                        labelText: 'Ciudad',
+                        labelStyle: GoogleFonts.inter(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide:
+                          BorderSide(color: Colors.black.withOpacity(0.3)),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(color: Colors.blue),
+                            borderRadius: BorderRadius.circular(12)),
+                        fillColor: Colors.white.withOpacity(0.1),
+                        filled: true,
+                      ),
+                    ),
                   ],
                 ),
               ),
