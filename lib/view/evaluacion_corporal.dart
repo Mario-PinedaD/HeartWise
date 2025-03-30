@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print, unused_element, non_constant_identifier_names, use_build_context_synchronously, depend_on_referenced_packages
+// ignore_for_file: avoid_print, unused_element, non_constant_identifier_names, use_build_context_synchronously, depend_on_referenced_packages, unused_import
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -12,7 +12,8 @@ class EvaluacionCorporalScreen extends StatefulWidget {
 
   // Constructor que recibe un Map de datos del usuario
   final Map<String, dynamic>? userData;
-  const EvaluacionCorporalScreen({super.key, this.userData});
+  final String? tipoAnalisis;
+  const EvaluacionCorporalScreen({super.key, this.userData, this.tipoAnalisis});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -432,8 +433,6 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
                       ElevatedButton(
                         onPressed: () async {
                           // Llama a la función enviarDatos y espera el resultado
-                          print('Correo a enviar: ${widget.userData?['correo']}');
-                        
                           // var resultado = await enviarDatos({
                           //   "Genero": 1,
                           //   "Edad": 19,
@@ -446,26 +445,51 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
                           //   "GrasaVisc": 5,
                           //   "Correo": '${widget.userData?['correo']}',
                           // }); 
-                          // // NewSecurePassword
-                          // // Verifica si la función enviarDatos devolvió un resultado exitoso (JSON no nulo)
-                          // if (resultado != null) {
-                          //   // Extrae los datos que necesitas del JSON
-                          //   String dato1 = resultado['HCY'].toString(); // Reemplaza 'dato1' con la clave real del primer dato
-                          //   String dato2 = resultado['HCY_Level'].toString(); // Reemplaza 'dato2' con la clave real del segundo dato
-                          //   print("Resultados: $resultado");
+                          var resultado = await enviarDatos({
+                            "Genero": genero,
+                            "Edad": edad,
+                            "Talla": altura,
+                            "Peso": peso,
+                            "IMC": imc,
+                            "GrasaT": grasaT,
+                            "Musculo": musculo,
+                            "MetabBasal": metabBasal,
+                            "GrasaVisc": grasaVisc,
+                            "Correo": '${widget.userData?['correo']}',
+                          });
 
-                          //   // Navega a la pantalla ResultadosScreen y pasa los datos
-                          //   Navigator.push(
-                          //     context,
-                          //     MaterialPageRoute(builder: (context) => ResultadosScreen(dato1: dato1, dato2: dato2, correo: widget.userData?['nombre'],)),
-                          //   );
-                          // } else {
-                          //   // Maneja el caso en que la función enviarDatos no devolvió datos (opcional)
-                          //   print("Error: No se recibieron datos de enviarDatos.");
-                          //   ScaffoldMessenger.of(context).showSnackBar(
-                          //     SnackBar(content: Text("Error al procesar los datos.")),
-                          //   );
-                          // }
+                          var datosIngresados = {
+                            "Genero": genero,
+                            "Edad": edad,
+                            "Talla": altura,
+                            "Peso": peso,
+                            "IMC": imc,
+                            "GrasaT": grasaT,
+                            "Musculo": musculo,
+                            "MetabBasal": metabBasal,
+                            "GrasaVisc": grasaVisc,
+                          };
+
+                          // NewSecurePassword
+                          // Verifica si la función enviarDatos devolvió un resultado exitoso (JSON no nulo)
+                          if (resultado != null) {
+                            // Extrae los datos que necesitas del JSON
+                            String dato1 = resultado['HCY'].toString(); // Reemplaza 'dato1' con la clave real del primer dato
+                            String dato2 = resultado['HCY_Level'].toString(); // Reemplaza 'dato2' con la clave real del segundo dato
+                            print("Resultados: $resultado");
+
+                            // Navega a la pantalla ResultadosScreen y pasa los datos
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => ResultadosScreen(dato1: dato1, dato2: dato2, dato3: widget.tipoAnalisis, correo: widget.userData?['nombre'], datosIngresados: datosIngresados,)),
+                            );
+                          } else {
+                            // Maneja el caso en que la función enviarDatos no devolvió datos (opcional)
+                            print("Error: No se recibieron datos de enviarDatos.");
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Error al procesar los datos.")),
+                            );
+                          }
 
                           print("===============================\n RESULTADO DE REGRESION ARBOL 2");
                         },
@@ -675,15 +699,6 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
         );
       },
     );
-  }
-
-  Future<void> fetchData() async {
-    final response = await http.get(Uri.parse('https://shiuko.me/connection'));
-    if (response.statusCode == 200) {
-      print("Se hizo la conexión correctamente a ${response.body}");
-    } else {
-      print('Errores de conexión: ${response.statusCode}');
-    }
   }
 
   Future<Map<String, dynamic>?> enviarDatos(Map<String, dynamic> datos) async {

@@ -1,8 +1,10 @@
-// ignore_for_file: use_key_in_widget_constructors, implementation_imports, prefer_const_constructors_in_immutables
+// ignore_for_file: use_key_in_widget_constructors, implementation_imports, prefer_const_constructors_in_immutables, unused_import
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:heartwise/view/analisis_clinico.dart';
 import 'package:heartwise/view/evaluacion_corporal.dart';
+import 'package:heartwise/view/perfil_genetico.dart';
 import 'package:mysql1/src/single_connection.dart';
 
 // ignore: camel_case_types
@@ -34,19 +36,21 @@ class home_screen extends StatelessWidget {
       });
     }
 
+    String rol = userInfoMap['rol'] ?? 'publico';
+
     final List<Map<String, dynamic>> datos = [
     {'titulo': 'Evaluación Corporal Básica',
       'descripcion': 'Evalúa tus parámetros físicos clave, como peso, IMC y composición corporal para un control básico de tu salud.',
       'disponible': true,
-      'direc': EvaluacionCorporalScreen(userData: userInfoMap)},
+      'direc': EvaluacionCorporalScreen(userData: userInfoMap, tipoAnalisis: 'AnalisisClinicosv1',)},
     {'titulo': 'Análisis Clínico Integral',
       'descripcion': 'Evalúa tus parámetros físicos clave, como peso, IMC y composición corporal para un control básico de tu salud.',
-      'disponible': false,
-      'direc': null},
+      'disponible': rol == 'medico' ? true : false,
+      'direc': AnalisisClinicoScreen(userData: userInfoMap, tipoAnalisis: 'AnalisisCrlinicosv2',)},
     {'titulo': 'Perfil Genético Avanzado',
       'descripcion': 'Analiza tu ADN y metabolismo para una evaluación profunda de salud, enfocada en la prevención de enfermedades a nivel molecular.',
-      'disponible': false,
-      'direc': null},
+      'disponible': rol == 'medico' ? true : false,
+      'direc': PerfilGeneticoScreen(userData: userInfoMap, tipoAnalisis: 'Geneticos',)},
   ];
 
     return Scaffold(

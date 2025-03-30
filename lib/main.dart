@@ -1,15 +1,16 @@
-// ignore_for_file: unused_import
+// ignore_for_file: unused_import, duplicate_import
 
 import 'package:flutter/material.dart';
 import 'package:heartwise/view/crear_cuenta.dart';
 import 'package:heartwise/view/evaluacion_corporal.dart';
 //import 'package:heartwise/view/evaluacion_corporal.dart';
 import 'package:heartwise/view/home_screen.dart';
-//import 'package:heartwise/view/home_screen.dart'
+import 'package:heartwise/view/home_screen.dart';
 import 'package:heartwise/view/perfil_genetico.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:heartwise/view/resultados_screen.dart';
 import 'package:heartwise/view/perfil_genetico.dart';
+import 'package:heartwise/view/welcome_screen.dart';
 
 void main() async{
   try {
@@ -27,15 +28,15 @@ class HeartWiseApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'HeartWise',
       //home: WelcomeScreen(),
       //home: home_screen(),
       //home: EvaluacionCorporalScreen(),
       //home: AnalisisClinicoScreen(),
-      //home: RegisterScreen(),
-      home: ResultadosScreen(),
+      home: WelcomeScreen(),
+      //home: ResultadosScreen(),
     );
   }
 }

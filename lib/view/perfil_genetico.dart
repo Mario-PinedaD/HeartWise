@@ -6,7 +6,9 @@ import 'package:heartwise/view/resultados_screen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class PerfilGeneticoScreen extends StatefulWidget {
-  const PerfilGeneticoScreen({super.key});
+  final Map<String, dynamic>? userData; // Cambiado a Map<String, dynamic> para mayor flexibilidad
+  final String? tipoAnalisis;
+  const PerfilGeneticoScreen({super.key, this.userData, this.tipoAnalisis});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -702,7 +704,7 @@ class _PerfilGeneticoScreen extends State<PerfilGeneticoScreen> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => ResultadosScreen(dato1: "", dato2: "")));
+                                  builder: (context) => ResultadosScreen(dato1: "", dato2: "", dato3: widget.tipoAnalisis,)));
                           /*print(edad);
                           print(genero);
                           print(peso);
