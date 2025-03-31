@@ -3,30 +3,46 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+/// Widget principal para mostrar los resultados de análisis médicos
 class ResultadosScreen extends StatefulWidget {
-  final String? dato1;
-  final String? dato2;
-  final String? dato3;
-  final String? correo;
-  final Map<String, dynamic>? datosIngresados;
-  const ResultadosScreen({super.key, this.dato1, this.dato2, this.dato3, this.correo, this.datosIngresados});
+  // Propiedades para recibir datos
+  final String? dato1;        // Valor numérico de homocisteína
+  final String? dato2;        // Nivel de riesgo (bajo, medio, alto)
+  final String? dato3;        // Tipo de análisis
+  final String? correo;       // Correo/nombre del paciente
+  final Map<String, dynamic>? datosIngresados;  // Datos antropométricos
+
+  // Constructor con parámetros nombrados opcionales
+  const ResultadosScreen({
+    super.key, 
+    this.dato1, 
+    this.dato2, 
+    this.dato3, 
+    this.correo, 
+    this.datosIngresados
+  });
 
   @override
   _ResultadosScreenState createState() => _ResultadosScreenState();
 }
 
-class _ResultadosScreenState  extends State<ResultadosScreen> with SingleTickerProviderStateMixin {
+/// Estado del widget que maneja la lógica y animaciones
+class _ResultadosScreenState extends State<ResultadosScreen> 
+    with SingleTickerProviderStateMixin {
+  // Controladores para la animación del corazón
   late AnimationController _controller;
   late Animation<double> _animation;
 
   @override
   void initState() {
     super.initState();
+    // Configuración de la animación pulsante
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1000),
     )..repeat(reverse: true);
 
+    // Definición de la animación de escala
     _animation = Tween<double>(begin: 1.0, end: 1.3).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
@@ -34,15 +50,17 @@ class _ResultadosScreenState  extends State<ResultadosScreen> with SingleTickerP
 
   @override
   void dispose() {
+    // Limpieza del controlador de animación
     _controller.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
+    // Variable para almacenar la descripción del resultado
     String description = '';
 
-    print("Tipo de prueba: ${widget.dato3}");
-
+    // Determina el mensaje basado en el nivel de homocisteína
     if ("${widget.dato2}" == 'bajo') {
       description = "Tu nivel de homocisteína se encuentra dentro del rango bajo. Esto sugiere un bajo riesgo de problemas de salud relacionados con la homocisteína. Sin embargo, es importante mantener un estilo de vida saludable y realizar chequeos regulares.";
     } else if ("${widget.dato2}" == 'medio') {
@@ -53,7 +71,8 @@ class _ResultadosScreenState  extends State<ResultadosScreen> with SingleTickerP
       description = "Nivel de homocisteína desconocido."; // Manejar casos inesperados
     }
 
-    final List<Widget> ResultadosAnalisisClinicosv1 =[
+    // Definición de resultados para diferentes tipos de análisis
+    final List<Widget> ResultadosAnalisisClinicosv1 = [
       _buildResultCard("COL", "00"),
       _buildResultCard("TRG", "00"),
       _buildResultCard("HDL", "00"),
@@ -67,10 +86,12 @@ class _ResultadosScreenState  extends State<ResultadosScreen> with SingleTickerP
       _buildResultCard("SAT", "00"),
     ];
 
+    // Listas para organizar los resultados
     List<Widget> resultadosToShow = [];
     List<Widget> resultadosToShow2 = [];
     List<Widget> resultadosToShow3 = [];
 
+    // Selección de resultados según el tipo de análisis
     if (widget.dato3 == 'AnalisisCrlinicosv2') {
       resultadosToShow = ResultadosAnalisisClinicosv1;
     } else if (widget.dato3 == 'Geneticos') {
@@ -78,6 +99,7 @@ class _ResultadosScreenState  extends State<ResultadosScreen> with SingleTickerP
       resultadosToShow2 = ResultadosAnalisisClinicosv1;
     }
 
+    // Construcción de la interfaz de usuario
     return Scaffold(
       backgroundColor: Colors.red.shade700,
       appBar: AppBar(
@@ -111,17 +133,24 @@ class _ResultadosScreenState  extends State<ResultadosScreen> with SingleTickerP
                 padding: const EdgeInsets.all(16),
                 child: Row(
                   children: [
-                    ScaleTransition(scale: _animation,
-                    child: Image.asset('lib/sources/heart-black.png',
-                      width: 50, height: 50, fit: BoxFit.contain, alignment: Alignment.bottomCenter,),)
-                    ,
+                    ScaleTransition(
+                      scale: _animation,
+                      child: Image.asset(
+                        'lib/sources/heart-black.png',
+                        width: 50,
+                        height: 50,
+                        fit: BoxFit.contain,
+                        alignment: Alignment.bottomCenter,
+                      ),
+                    ),
                     const SizedBox(width: 16),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           "Niveles de Homocisteína",
-                          style: GoogleFonts.poppins(fontSize: 16,fontWeight: FontWeight.bold)
+                          style: GoogleFonts.poppins(
+                              fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                         Text(
                           "${widget.dato1} µmol/L",
@@ -178,10 +207,14 @@ class _ResultadosScreenState  extends State<ResultadosScreen> with SingleTickerP
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _buildResultCard("Grasa Total", "${widget.datosIngresados?['GrasaT']}"),
-                _buildResultCard("Masa Muscular", "${widget.datosIngresados?['Musculo']}"),
-                _buildResultCard("Metabolismo Basal", "${widget.datosIngresados?['MetabBasal']}"),
-                _buildResultCard("Grasa Visceral", "${widget.datosIngresados?['GrasaVisc']}"),
+                _buildResultCard(
+                    "Grasa Total", "${widget.datosIngresados?['GrasaT']}"),
+                _buildResultCard(
+                    "Masa Muscular", "${widget.datosIngresados?['Musculo']}"),
+                _buildResultCard("Metabolismo Basal",
+                    "${widget.datosIngresados?['MetabBasal']}"),
+                _buildResultCard(
+                    "Grasa Visceral", "${widget.datosIngresados?['GrasaVisc']}"),
               ],
             ),
             const SizedBox(height: 16),
@@ -215,30 +248,10 @@ class _ResultadosScreenState  extends State<ResultadosScreen> with SingleTickerP
                   ),
                 ],
               ),
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            //   children: [
-            //     for(var widget in ResultadosAnalisisClinicosv1) widget,
-            //   ],
-            // ),
-            // const SizedBox(height: 16),
-
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            //   children: [
-            //     for(var widget in ResultadosAnalisisCrlinicosv2) widget,
-            //   ],
-            // ),
-            // const SizedBox(height: 16,),
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            //   children: [
-            //     for(var widget in ResultadosGeneticos) widget,
-            //   ],
-            // ),
             Text(
               description,
-              style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.bold,color: Colors.white),
+              style: GoogleFonts.poppins(
+                  fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
             ),
             const SizedBox(height: 16),
             ElevatedButton.icon(
@@ -261,9 +274,11 @@ class _ResultadosScreenState  extends State<ResultadosScreen> with SingleTickerP
     );
   }
 
+  /// Widget auxiliar para construir tarjetas de resultado
   Widget _buildResultCard(String title, String value) {
     return Column(
       children: [
+        // Contenedor circular para el valor
         Container(
           width: 70,
           height: 70,
@@ -296,5 +311,4 @@ class _ResultadosScreenState  extends State<ResultadosScreen> with SingleTickerP
       ],
     );
   }
-
 }
