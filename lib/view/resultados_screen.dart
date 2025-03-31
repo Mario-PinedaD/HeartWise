@@ -73,17 +73,17 @@ class _ResultadosScreenState extends State<ResultadosScreen>
 
     // Definición de resultados para diferentes tipos de análisis
     final List<Widget> ResultadosAnalisisClinicosv1 = [
-      _buildResultCard("COL", "00"),
-      _buildResultCard("TRG", "00"),
-      _buildResultCard("HDL", "00"),
-      _buildResultCard("LDL", "00"),
-      _buildResultCard("VLDL", "00"),
+      _buildResultCard("COL", "${widget.datosIngresados?['Colesterol']}"),
+      _buildResultCard("TRG", "${widget.datosIngresados?['Trigliceridos']}"),
+      _buildResultCard("HDL", "${widget.datosIngresados?['Hdl']}"),
+      _buildResultCard("LDL", "${widget.datosIngresados?['Ldl']}"),
+      _buildResultCard("VLDL", "${widget.datosIngresados?['Vldl']}"),
     ];
 
     final List<Widget> ResultadosGeneticos = [
-      _buildResultCard("ALU", "00"),
-      _buildResultCard("LINE", "00"),
-      _buildResultCard("SAT", "00"),
+      _buildResultCard("ALU", "${widget.datosIngresados?['Alu']}"),
+      _buildResultCard("LINE", "${widget.datosIngresados?['Line']}"),
+      _buildResultCard("SAT", "${widget.datosIngresados?['Sat']}"),
     ];
 
     // Listas para organizar los resultados
@@ -236,6 +236,7 @@ class _ResultadosScreenState extends State<ResultadosScreen>
                   ),
                 ],
               ),
+            const SizedBox(height: 16),
             if (resultadosToShow3.isNotEmpty) // Mostrar v1 en otra fila si es necesario
               Column(
                 children: [

@@ -39,7 +39,7 @@ class home_screen extends StatelessWidget {
     final List<Map<String, dynamic>> datos = [
       {
         'titulo': 'Evaluación Corporal Básica',
-        'descripcion': 'Evalúa tus parámetros físicos clave...',
+        'descripcion': 'Evalúa tus parámetros físicos clave, como peso, IMC y composición corporal para un control básico de tu salud.',
         'disponible': true,  // Siempre disponible
         'direc': EvaluacionCorporalScreen(
           userData: userInfoMap, 
@@ -48,7 +48,7 @@ class home_screen extends StatelessWidget {
       },
       {
         'titulo': 'Análisis Clínico Integral',
-        'descripcion': 'Evalúa tus parámetros físicos clave...',
+        'descripcion': 'Evalúa tus parámetros físicos clave, como peso, IMC y composición corporal para un control básico de tu salud.',
         'disponible': rol == 'medico' ? true : false,  // Solo para médicos
         'direc': AnalisisClinicoScreen(
           userData: userInfoMap, 
@@ -57,7 +57,7 @@ class home_screen extends StatelessWidget {
       },
       {
         'titulo': 'Perfil Genético Avanzado',
-        'descripcion': 'Analiza tu ADN y metabolismo...',
+        'descripcion': 'Analiza tu ADN y metabolismo para una evaluación profunda de salud, enfocada en la prevención de enfermedades a nivel molecular.',
         'disponible': rol == 'medico' ? true : false,  // Solo para médicos
         'direc': PerfilGeneticoScreen(
           userData: userInfoMap, 

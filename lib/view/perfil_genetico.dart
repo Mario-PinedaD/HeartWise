@@ -1,7 +1,8 @@
-// ignore_for_file: non_constant_identifier_names, avoid_print, unused_element, library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names, avoid_print, unused_element, library_private_types_in_public_api, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:heartwise/service/database_service.dart';
 import 'package:heartwise/view/resultados_screen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -63,6 +64,12 @@ class _PerfilGeneticoScreen extends State<PerfilGeneticoScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    InkWell(
+                      onTap: () => (Navigator.pop(context)),
+                      //Navigator.pop(context),
+                      child: const Icon(Icons.arrow_back, color: Colors.white, size: 30),
+                    ),
+                    const SizedBox(height: 8),
                     Text(
                       'Perfíl Genético Avanzado',
                       style: GoogleFonts.poppins(
@@ -95,7 +102,7 @@ class _PerfilGeneticoScreen extends State<PerfilGeneticoScreen> {
                         const Icon(Icons.person, color: Colors.white),
                         const SizedBox(width: 8),
                         Text(
-                          'Usuario Guapo Precioso',
+                          '${widget.userData?['nombre'] ?? 'Nombre'}',
                           style: GoogleFonts.poppins(
                             color: Colors.white,
                             fontWeight: FontWeight.w600,
@@ -518,53 +525,6 @@ class _PerfilGeneticoScreen extends State<PerfilGeneticoScreen> {
                       ],
                     ),
                     const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        ElevatedButton.icon(
-                          onPressed: () => _showInputDialog(context, "HCY"),
-                          icon: const Icon(
-                            Icons.science,
-                            color: Colors.white,
-                          ),
-                          label: Text(
-                            hcy == null ? "HCY" : "$hcy",
-                            style: GoogleFonts.poppins(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                          ),
-                        ),
-                        ElevatedButton.icon(
-                          onPressed: () =>
-                              _showInputDialog(context, "Nivel de HCY"),
-                          icon: const Icon(
-                            Icons.science,
-                            color: Colors.white,
-                          ),
-                          label: Text(
-                            hcy_level == null ? "Nivel de HCY" : "$hcy_level",
-                            style: GoogleFonts.poppins(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
 
                     // Sección de marcadores genéticos
                     Row(
@@ -642,17 +602,66 @@ class _PerfilGeneticoScreen extends State<PerfilGeneticoScreen> {
 
                     // Botón de finalizar
                     ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ResultadosScreen(
-                              dato1: "",
-                              dato2: "",
-                              dato3: widget.tipoAnalisis,
-                            ),
-                          ),
-                        );
+                      onPressed: () async {
+                        var resultado = await DatabaseService.enviarDatos01({
+                            "Genero": genero,
+                            "Edad": edad,
+                            "Talla": altura,
+                            "Peso": peso,
+                            "IMC": imc,
+                            "GrasaT": grasaT,
+                            "Musculo": musculo,
+                            "MetabBasal": metabBasal,
+                            "GrasaVisc": grasaVisc,
+                            "Colesterol": colesterol,
+                            "Trigliceridos": trigliceridos,
+                            "Hdl": hdl,
+                            "Ldl": ldl,
+                            "Vldl": vldl,
+                            "alu": alu,
+                            "line": line,
+                            "sat": sat,
+                            "Correo": '${widget.userData?['correo']}',
+                          });
+
+                          var datosIngresados = {
+                            "Genero": genero,
+                            "Edad": edad,
+                            "Talla": altura,
+                            "Peso": peso,
+                            "IMC": imc,
+                            "GrasaT": grasaT,
+                            "Musculo": musculo,
+                            "MetabBasal": metabBasal,
+                            "GrasaVisc": grasaVisc,
+                            "Colesterol": colesterol,
+                            "Trigliceridos": trigliceridos,
+                            "Hdl": hdl,
+                            "Ldl": ldl,
+                            "Vldl": vldl,
+                            "Alu": alu,
+                            "Line": line,
+                            "Sat": sat,
+                          };
+                          // Verifica si la función enviarDatos devolvió un resultado exitoso (JSON no nulo)
+                          if (resultado != null) {
+                            // Extrae los datos que necesitas del JSON
+                            String dato1 = resultado['HCY'].toString(); // Reemplaza 'dato1' con la clave real del primer dato
+                            String dato2 = resultado['HCY_Level'].toString(); // Reemplaza 'dato2' con la clave real del segundo dato
+                            print("Resultados: $resultado");
+
+                            // Navega a la pantalla ResultadosScreen y pasa los datos
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => ResultadosScreen(dato1: dato1, dato2: dato2, dato3: widget.tipoAnalisis, correo: widget.userData?['nombre'], datosIngresados: datosIngresados,)),
+                            );
+                          } else {
+                            // Maneja el caso en que la función enviarDatos no devolvió datos (opcional)
+                            print("Error: No se recibieron datos de enviarDatos.");
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Error al procesar los datos.")),
+                            );
+                          }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
@@ -864,12 +873,6 @@ class _PerfilGeneticoScreen extends State<PerfilGeneticoScreen> {
                         break;
                       case "VLDL":
                         vldl = value;
-                        break;
-                      case "HCY":
-                        hcy = value;
-                        break;
-                      case "Nivel de HCY":
-                        hcy_level = value;
                         break;
                       case "ALU":
                         alu = value;

@@ -1,4 +1,6 @@
 // Importaciones necesarias para el funcionamiento del servicio
+// ignore_for_file: depend_on_referenced_packages
+
 import 'package:http/http.dart' as http;  // Para realizar peticiones HTTP
 import 'dart:convert';                    // Para codificación/decodificación JSON
 
@@ -55,9 +57,51 @@ class DatabaseService {
 
   /// Método para enviar datos al modelo predictivo
   /// Recibe datos médicos/antropométricos y retorna predicciones
-  static Future<Map<String, dynamic>?> enviarDatos(Map<String, dynamic> datos) async {
+  static Future<Map<String, dynamic>?> enviarDatos01(Map<String, dynamic> datos) async {
     // URL del endpoint de predicción
     final url = Uri.parse('https://shiuko.me/predict');
+    
+    // Realiza la petición POST con los datos
+    final response = await http.post(
+      url,
+      body: json.encode(datos),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    // Verifica respuesta
+    if (response.statusCode == 200) {
+      print('Datos enviados correctamente. Respuesta del servidor: ${response.body}');
+      return json.decode(response.body); // Retorna predicción
+    } else {
+      print('Error al enviar datos: ${response.statusCode}');
+      return null; // Retorna null en caso de error
+    }
+  }
+
+  static Future<Map<String, dynamic>?> enviarDatos02(Map<String, dynamic> datos) async {
+    // URL del endpoint de predicción
+    final url = Uri.parse('https://shiuko.me/hema');
+    
+    // Realiza la petición POST con los datos
+    final response = await http.post(
+      url,
+      body: json.encode(datos),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    // Verifica respuesta
+    if (response.statusCode == 200) {
+      print('Datos enviados correctamente. Respuesta del servidor: ${response.body}');
+      return json.decode(response.body); // Retorna predicción
+    } else {
+      print('Error al enviar datos: ${response.statusCode}');
+      return null; // Retorna null en caso de error
+    }
+  }
+
+  static Future<Map<String, dynamic>?> enviarDatos03(Map<String, dynamic> datos) async {
+    // URL del endpoint de predicción
+    final url = Uri.parse('https://shiuko.me/dna');
     
     // Realiza la petición POST con los datos
     final response = await http.post(

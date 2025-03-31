@@ -432,7 +432,7 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
                       // Botón Finalizar
                       ElevatedButton(
                         onPressed: () async {
-                          var resultado = await DatabaseService.enviarDatos({
+                          var resultado = await DatabaseService.enviarDatos01({
                             "Genero": genero,
                             "Edad": edad,
                             "Talla": altura,
@@ -457,7 +457,6 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
                             "GrasaVisc": grasaVisc,
                           };
 
-                          // NewSecurePassword
                           // Verifica si la función enviarDatos devolvió un resultado exitoso (JSON no nulo)
                           if (resultado != null) {
                             // Extrae los datos que necesitas del JSON
@@ -477,8 +476,6 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
                               SnackBar(content: Text("Error al procesar los datos.")),
                             );
                           }
-
-                          print("===============================\n RESULTADO DE REGRESION ARBOL 2");
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red,

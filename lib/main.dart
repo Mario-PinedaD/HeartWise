@@ -1,43 +1,41 @@
 // ignore_for_file: unused_import, duplicate_import
 
-import 'package:flutter/material.dart';
-import 'package:heartwise/view/crear_cuenta.dart';
-import 'package:heartwise/view/evaluacion_corporal.dart';
-//import 'package:heartwise/view/evaluacion_corporal.dart';
-import 'package:heartwise/view/home_screen.dart';
-import 'package:heartwise/view/home_screen.dart';
-import 'package:heartwise/view/perfil_genetico.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:heartwise/view/resultados_screen.dart';
-import 'package:heartwise/view/perfil_genetico.dart';
-import 'package:heartwise/view/welcome_screen.dart';
+import 'package:flutter/material.dart'; // Importa la librería de Flutter para la interfaz de usuario
+import 'package:heartwise/view/crear_cuenta.dart'; // Importa la pantalla de creación de cuenta
+import 'package:heartwise/view/evaluacion_corporal.dart'; // Importa la pantalla de evaluación corporal
+//import 'package:heartwise/view/evaluacion_corporal.dart'; // Comentario: Importación duplicada de la pantalla de evaluación corporal
+import 'package:heartwise/view/home_screen.dart'; // Importa la pantalla principal (Home)
+import 'package:heartwise/view/home_screen.dart'; // Importa la pantalla principal (Home)
+import 'package:heartwise/view/perfil_genetico.dart'; // Importa la pantalla de perfil genético
+import 'package:flutter_dotenv/flutter_dotenv.dart'; // Importa el paquete para cargar variables de entorno desde un archivo .env
+import 'package:heartwise/view/resultados_screen.dart'; // Importa la pantalla de resultados
+import 'package:heartwise/view/perfil_genetico.dart'; // Importa la pantalla de perfil genético
+import 'package:heartwise/view/welcome_screen.dart'; // Importa la pantalla de bienvenida
 
-void main() async{
+void main() async {
+  // Función principal asíncrona que se ejecuta al iniciar la aplicación
   try {
-    await dotenv.load(fileName: ".env");
-    runApp(const HeartWiseApp());
+    await dotenv.load(fileName: ".env"); // Carga las variables de entorno desde el archivo .env
+    runApp(const HeartWiseApp()); // Inicia la aplicación HeartWise
   } catch (e) {
-    print("Error cargando .env: $e");
+    print("Error cargando .env: $e"); // Imprime un mensaje de error si no se puede cargar el archivo .env
     // Continuar con la app incluso si no se carga el .env
-    runApp(const HeartWiseApp());
+    runApp(const HeartWiseApp()); // Inicia la aplicación HeartWise incluso si hay un error al cargar el .env
   }
 }
 
 class HeartWiseApp extends StatelessWidget {
+  // Widget principal de la aplicación
   const HeartWiseApp({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Método que construye la interfaz de usuario
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'HeartWise',
-      //home: WelcomeScreen(),
-      //home: home_screen(),
-      //home: EvaluacionCorporalScreen(),
-      //home: AnalisisClinicoScreen(),
-      home: WelcomeScreen(),
-      //home: ResultadosScreen(),
+      // Widget que define la estructura básica de la aplicación
+      debugShowCheckedModeBanner: false, // Desactiva la etiqueta de "debug" en la esquina superior derecha
+      title: 'HeartWise', // Define el título de la aplicación
+      home: WelcomeScreen(), // Establece la pantalla de bienvenida como la pantalla de inicio
     );
   }
 }
-
