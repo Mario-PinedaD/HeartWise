@@ -8,6 +8,7 @@ import 'package:heartwise/view/analisis_clinico.dart';      // Pantalla de anál
 import 'package:heartwise/view/evaluacion_corporal.dart';    // Pantalla de evaluación corporal
 import 'package:heartwise/view/perfil_genetico.dart';        // Pantalla de perfil genético
 import 'package:mysql1/src/single_connection.dart';          // Conexión a base de datos
+import 'package:heartwise/view/resultados_cuenta.dart';     // Pantalla de resultados por correo
 
 // Clase principal que representa la pantalla de inicio
 // ignore: camel_case_types
@@ -147,6 +148,29 @@ class home_screen extends StatelessWidget {
                     ),
                   );
                 },
+              ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: () {
+                // Navegación a la pantalla de historial de pruebas
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ResultadosPorCorreo(correo: userInfoMap['correo']),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.medical_services, color: Colors.black),
+              label: const Text(
+                "Ver historial de pruebas",
+                style: TextStyle(color: Colors.black),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
             ),
           ],

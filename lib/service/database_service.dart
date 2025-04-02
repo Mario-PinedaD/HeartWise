@@ -78,45 +78,22 @@ class DatabaseService {
     }
   }
 
-  static Future<Map<String, dynamic>?> enviarDatos02(Map<String, dynamic> datos) async {
-    // URL del endpoint de predicción
-    final url = Uri.parse('https://shiuko.me/hema');
-    
-    // Realiza la petición POST con los datos
-    final response = await http.post(
-      url,
-      body: json.encode(datos),
-      headers: {'Content-Type': 'application/json'},
-    );
+  // Método para recibir los datos de Resultados por correo
+  static Future<Map<String, dynamic>?> obtenerDatosPorCorreo(String correo) async {
+    final url = Uri.parse('https://shiuko.me/resultados/$correo');
 
-    // Verifica respuesta
-    if (response.statusCode == 200) {
-      print('Datos enviados correctamente. Respuesta del servidor: ${response.body}');
-      return json.decode(response.body); // Retorna predicción
-    } else {
-      print('Error al enviar datos: ${response.statusCode}');
-      return null; // Retorna null en caso de error
-    }
-  }
-
-  static Future<Map<String, dynamic>?> enviarDatos03(Map<String, dynamic> datos) async {
-    // URL del endpoint de predicción
-    final url = Uri.parse('https://shiuko.me/dna');
-    
-    // Realiza la petición POST con los datos
-    final response = await http.post(
-      url,
-      body: json.encode(datos),
-      headers: {'Content-Type': 'application/json'},
-    );
-
-    // Verifica respuesta
-    if (response.statusCode == 200) {
-      print('Datos enviados correctamente. Respuesta del servidor: ${response.body}');
-      return json.decode(response.body); // Retorna predicción
-    } else {
-      print('Error al enviar datos: ${response.statusCode}');
-      return null; // Retorna null en caso de error
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        print('Datos recibidos correctamente. Respuesta del servidor: ${response.body}');
+        return json.decode(response.body); // Retorna datos decodificados
+      } else {
+        print('Error al recibir datos: ${response.statusCode}');
+        return null; // Retorna null en caso de error
+      }
+    } catch (e) {
+      print('Error al realizar la petición: $e');
+      return null; // Retorna null en caso de excepción
     }
   }
 }
