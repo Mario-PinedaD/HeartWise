@@ -433,15 +433,24 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
                       ElevatedButton(
                         onPressed: () async {
                           var resultado = await DatabaseService.enviarDatos01({
-                            "Genero": genero,
-                            "Edad": edad,
-                            "Talla": altura,
-                            "Peso": peso,
-                            "IMC": imc,
-                            "GrasaT": grasaT,
-                            "Musculo": musculo,
-                            "MetabBasal": metabBasal,
-                            "GrasaVisc": grasaVisc,
+                            "tipo": 1,
+                            "Genero": 1,
+                            "Edad": 19,
+                            "Talla": 161,
+                            "Peso": 59.8,
+                            "IMC": 23.1,
+                            "GrasaT": 37.1,
+                            "Musculo": 25.1,
+                            "MetabBasal": 1285.5,
+                            "GrasaVisc": 4,
+                            // "Colesterol": 159,
+                            // "Trigliceridos": 41,
+                            // "Hdl": 36,
+                            // "Ldl": 50,
+                            // "Vldl": 1658,
+                            // "alu": 49,
+                            // "line": 38,
+                            // "sat": 81,
                             "Correo": '${widget.userData?['correo']}',
                           });
 
