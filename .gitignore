@@ -10,6 +10,9 @@
 .svn/
 migrate_working_dir/
 
+# Ignore the following files and directories in the root of the project
+*.env.local
+
 # IntelliJ related
 *.iml
 *.ipr
