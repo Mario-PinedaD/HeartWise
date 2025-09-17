@@ -1,0 +1,21 @@
+CREATE TABLE Corporal (
+    id VARCHAR(255) NOT NULL PRIMARY KEY,
+    correo_usuario VARCHAR(255),
+    prueba INT(11),
+    genero ENUM('Hombre', 'Mujer'),
+    edad INT(11),
+    talla_cm DECIMAL(5,2),
+    peso_kg DECIMAL(5,2),
+    imc DECIMAL(5,2),
+    grasa_total DECIMAL(5,2),
+    musculo DECIMAL(5,2),
+    metabolismo_basal INT(11),
+    grasa_visceral DECIMAL(5,2),
+    hcy_level enum('bajo', 'medio', 'alto'),
+    hcy FLOAT,
+    procesado INT(1) DEFAULT 0,
+    fecha_ejecucion DATETIME,
+    FOREIGN KEY (correo_usuario) REFERENCES Usuarios(correo),
+    INDEX (correo_usuario),
+    INDEX (prueba)
+);
