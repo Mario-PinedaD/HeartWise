@@ -5,8 +5,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:heartwise/view/crear_cuenta.dart';
-import 'package:heartwise/view/home_screen.dart';
+import 'package:heartwise/view/main_navigation_screen.dart';
 import 'package:heartwise/service/database_service.dart';
+import 'package:heartwise/service/session_service.dart';
 
 /// Widget principal para la pantalla de inicio de sesión
 /// Maneja el estado de los campos del formulario y la autenticación
@@ -28,247 +29,312 @@ class _LoginScreen extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Cálculo del ancho del botón basado en el ancho de la pantalla
-    double screenWidth = MediaQuery.of(context).size.width;
-    double buttonWidth = screenWidth * 0.6; // 60% del ancho de la pantalla
-
     return Scaffold(
-      // Color de fondo principal de la aplicación
+      // Fondo rojo sólido como en evaluación corporal
       backgroundColor: const Color(0xFFDC3644),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Logo de la aplicación
-            Image.asset(
-              'lib/sources/heart.png',
-              width: 50,
-              height: 50,
-              fit: BoxFit.contain,
-            ),
-
-            const SizedBox(height: 20),
-
-            // Título de la pantalla
-            Text(
-              'Iniciar Sesión',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            // Tarjeta que contiene el formulario de login
-            Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+      body: Container(
+        child: SafeArea(
+          child: Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 20), // Título mejorado de la pantalla
+                Column(
                   children: [
-                    // Subtítulo del formulario
                     Text(
-                      'Ingresa tus credenciales',
+                      'Bienvenido a HeartWise',
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.inter(
+                      style: GoogleFonts.poppins(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Tu compañero inteligente para el cuidado cardiovascular.\nInicia sesión para acceder a tu panel personalizado.',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.poppins(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.white.withOpacity(0.9),
+                        height: 1.4,
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 48),
+
+                // Tarjeta moderna que contiene el formulario de login
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 20,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(32.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Subtítulo del formulario mejorado
+                        Center(
+                          child: Text(
+                            'Acceso Seguro a tu Cuenta',
+                            style: GoogleFonts.poppins(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFFDC3644),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 32),
+
+                        // Campo de correo electrónico moderno
+                        TextField(
+                          controller: _emailController,
+                          keyboardType: TextInputType.emailAddress,
+                          decoration: InputDecoration(
+                            labelText: 'Correo Electrónico',
+                            labelStyle: GoogleFonts.poppins(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.grey[600],
+                            ),
+                            prefixIcon: Icon(
+                              Icons.email_outlined,
+                              color: Colors.grey[400],
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.grey[300]!),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                  color: Color(0xFFDC3644), width: 2),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            fillColor: Colors.grey[50],
+                            filled: true,
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 16),
+                          ),
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        // Campo de contraseña moderno con toggle de visibilidad
+                        TextField(
+                          controller: _passwordController,
+                          obscureText: !_isPasswordVisible,
+                          decoration: InputDecoration(
+                            labelText: 'Contraseña',
+                            labelStyle: GoogleFonts.poppins(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.grey[600],
+                            ),
+                            hintText: 'Ingresa tu contraseña',
+                            hintStyle: GoogleFonts.poppins(
+                              color: Colors.grey[400],
+                            ),
+                            prefixIcon: Icon(
+                              Icons.lock_outline,
+                              color: Colors.grey[400],
+                            ),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _isPasswordVisible
+                                    ? Icons.visibility_outlined
+                                    : Icons.visibility_off_outlined,
+                                color: Colors.grey[400],
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _isPasswordVisible = !_isPasswordVisible;
+                                });
+                              },
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.grey[300]!),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                  color: Color(0xFFDC3644), width: 2),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            fillColor: Colors.grey[50],
+                            filled: true,
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 16),
+                          ),
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        // Enlace moderno para recuperar contraseña
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            onPressed: () {
+                              // TODO: Implementar recuperación de contraseña
+                            },
+                            child: Text(
+                              '¿Olvidaste tu contraseña?',
+                              style: GoogleFonts.poppins(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: const Color(0xFFDC3644),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 32),
+
+                // Botón principal moderno de inicio de sesión
+                SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: const Color(0xFFDC3644),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 2,
+                    ),
+                    onPressed: () async {
+                      // Obtiene los valores de los campos
+                      String email = _emailController.text;
+                      String password = _passwordController.text;
+
+                      // Validación de campos completos
+                      if (email.isNotEmpty && password.isNotEmpty) {
+                        // Intento de autenticación
+                        final result = await DatabaseService.enviarUsuario(
+                          {'email': email, 'password': password},
+                        );
+
+                        // Procesamiento de la respuesta
+                        if (result != null && result['usuario'] != null) {
+                          Map<String, dynamic> userInfo = result['usuario'];
+
+                          // Debug: Mostrar toda la respuesta del servidor
+                          print(
+                              'DEBUG - Respuesta completa del servidor: $result');
+                          print('DEBUG - Info del usuario: $userInfo');
+                          String userRole =
+                              userInfo['rol']?.toString() ?? 'publico';
+                          print('DEBUG - Rol del usuario en login: $userRole');
+
+                          // Guardar la sesión
+                          await SessionService.saveSession(
+                            userId: userInfo['id']?.toString() ?? '',
+                            email: userInfo['correo']?.toString() ?? email,
+                            userName: userInfo['nombre']?.toString() ?? '',
+                            userRole: userRole,
+                          );
+
+                          // Muestra mensaje de éxito
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('Inicio de sesión exitoso')),
+                          );
+
+                          // Navega a la pantalla principal y reemplaza la pila de navegación
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  MainNavigationScreen(userInfo: userInfo),
+                            ),
+                          );
+                        } else {
+                          // Muestra error de credenciales inválidas
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content:
+                                  Text('Usuario o contraseña incorrectos.'),
+                            ),
+                          );
+                        }
+                      } else {
+                        // Muestra error de campos incompletos
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content:
+                                Text('Por favor, completa todos los campos.'),
+                          ),
+                        );
+                      }
+                    },
+                    child: Text(
+                      'Iniciar Sesión',
+                      style: GoogleFonts.poppins(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Colors.grey.shade500,
+                        color: const Color(0xFFDC3644),
                       ),
                     ),
+                  ),
+                ),
 
-                    const SizedBox(height: 20),
+                const SizedBox(height: 24),
 
-                    // Campo de correo electrónico
-                    TextField(
-                      controller: _emailController,
-                      decoration: InputDecoration(
-                        labelText: 'Correo Electrónico',
-                        labelStyle: GoogleFonts.inter(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide:
-                              BorderSide(color: Colors.black.withOpacity(0.3)),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(color: Colors.blue),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        fillColor: Colors.white.withOpacity(0.1),
-                        filled: true,
+                // Enlace moderno para crear nueva cuenta
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      '¿Nuevo en HeartWise? ',
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        color: Colors.white.withOpacity(0.8),
                       ),
                     ),
-
-                    const SizedBox(height: 20),
-
-                    // Campo de contraseña con toggle de visibilidad
-                    TextField(
-                      controller: _passwordController,
-                      obscureText: !_isPasswordVisible,
-                      decoration: InputDecoration(
-                        labelText: 'Contraseña',
-                        labelStyle: GoogleFonts.inter(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                        hintText: 'Genera tu contraseña',
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _isPasswordVisible
-                                ? Icons.visibility
-                                : Icons.visibility_off,
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const RegisterScreen(),
                           ),
-                          onPressed: () {
-                            setState(() {
-                              _isPasswordVisible = !_isPasswordVisible;
-                            });
-                          },
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide:
-                              BorderSide(color: Colors.black.withOpacity(0.3)),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(color: Colors.blue),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        fillColor: Colors.white.withOpacity(0.1),
-                        filled: true,
-                      ),
-                    ),
-
-                    // Enlace para recuperar contraseña
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed: () {
-                          // TODO: Implementar recuperación de contraseña
-                        },
-                        child: Text(
-                          'Perdiste tu contraseña?',
-                          style: GoogleFonts.inter(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey,
-                          ),
+                        );
+                      },
+                      child: Text(
+                        'Regístrate',
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
                         ),
                       ),
                     ),
                   ],
                 ),
-              ),
+
+                const SizedBox(height: 20),
+              ],
             ),
-
-            const SizedBox(height: 20),
-
-            // Botón principal de inicio de sesión
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white.withOpacity(0.2),
-                foregroundColor: Colors.white,
-                side: const BorderSide(color: Colors.white),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                elevation: 0,
-                minimumSize: Size(buttonWidth, 60),
-              ),
-              onPressed: () async {
-                // Obtiene los valores de los campos
-                String email = _emailController.text;
-                String password = _passwordController.text;
-
-                // Validación de campos completos
-                if (email.isNotEmpty && password.isNotEmpty) {
-                  // Intento de autenticación
-                  final result = await DatabaseService.enviarUsuario(
-                    {'email': email, 'password': password},
-                  );
-
-                  // Procesamiento de la respuesta
-                  if (result != null && result['usuario'] != null) {
-                    Map<String, dynamic> userInfo = result['usuario'];
-
-                    // Muestra mensaje de éxito
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Inicio de sesión exitoso')),
-                    );
-
-                    // Navega a la pantalla principal
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => home_screen(userInfo: userInfo),
-                      ),
-                    );
-                  } else {
-                    // Muestra error de credenciales inválidas
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Usuario o contraseña incorrectos.'),
-                      ),
-                    );
-                  }
-                } else {
-                  // Muestra error de campos incompletos
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Por favor, completa todos los campos.'),
-                    ),
-                  );
-                }
-              },
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-                child: Text(
-                  'Entrar',
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.inter(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 10),
-
-            // Enlace para crear nueva cuenta
-            TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const RegisterScreen(),
-                  ),
-                );
-              },
-              child: Text(
-                'No tienes una cuenta? Crear una',
-                style: GoogleFonts.inter(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
