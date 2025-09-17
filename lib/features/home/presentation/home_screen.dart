@@ -7,7 +7,7 @@ import 'package:google_fonts/google_fonts.dart'; // Fuentes de Google
 import 'package:heartwise/features/analysis/presentation/analisis_clinico.dart'; // Clinical analysis
 import 'package:heartwise/features/analysis/presentation/evaluacion_corporal.dart'; // Body evaluation
 import 'package:heartwise/features/results/presentation/resultados_cuenta.dart'; // Results by email
-import 'package:heartwise/core/services/session_service.dart'; // Servicio de sesiones
+import 'package:heartwise/features/home/application/home_controller.dart';
 import 'package:heartwise/features/auth/presentation/login_screen.dart'; // Login screen
 import 'package:heartwise/service/database_service.dart'; // Servicio de base de datos
 
@@ -55,6 +55,7 @@ class _HomeContentWidget extends StatefulWidget {
 }
 
 class _HomeContentWidgetState extends State<_HomeContentWidget> {
+  final _homeController = HomeController();
   Map<String, dynamic>? _userInfoMap;
 
   @override
@@ -134,7 +135,7 @@ class _HomeContentWidgetState extends State<_HomeContentWidget> {
     // Si el usuario confirmó, proceder con el logout
     if (shouldLogout == true) {
       // Limpiar la sesión
-      await SessionService.clearSession();
+  await _homeController.logout();
 
       // Navegar a la pantalla de login y limpiar toda la pila
       Navigator.of(context).pushAndRemoveUntil(

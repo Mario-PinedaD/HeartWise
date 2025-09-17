@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:heartwise/view/crear_cuenta.dart';
 import 'package:heartwise/features/navigation/presentation/main_navigation_screen.dart';
+import 'package:heartwise/features/auth/application/login_controller.dart';
 import 'package:heartwise/service/database_service.dart';
 import 'package:heartwise/core/services/session_service.dart';
 
@@ -20,6 +21,7 @@ class LoginScreen extends StatefulWidget {
 
 /// Estado del widget LoginScreen que contiene la lógica de la interfaz
 class _LoginScreen extends State<LoginScreen> {
+  final _controller = LoginController();
   // Control de visibilidad del campo de contraseña
   bool _isPasswordVisible = false;
 
@@ -227,62 +229,20 @@ class _LoginScreen extends State<LoginScreen> {
                       String password = _passwordController.text;
 
                       // Validación de campos completos
-                      if (email.isNotEmpty && password.isNotEmpty) {
-                        // Intento de autenticación
-                        final result = await DatabaseService.enviarUsuario(
-                          {'email': email, 'password': password},
-                        );
-
-                        // Procesamiento de la respuesta
-                        if (result != null && result['usuario'] != null) {
-                          Map<String, dynamic> userInfo = result['usuario'];
-
-                          // Debug: Mostrar toda la respuesta del servidor
-                          print(
-                              'DEBUG - Respuesta completa del servidor: $result');
-                          print('DEBUG - Info del usuario: $userInfo');
-                          String userRole =
-                              userInfo['rol']?.toString() ?? 'publico';
-                          print('DEBUG - Rol del usuario en login: $userRole');
-
-                          // Guardar la sesión
-                          await SessionService.saveSession(
-                            userId: userInfo['id']?.toString() ?? '',
-                            email: userInfo['correo']?.toString() ?? email,
-                            userName: userInfo['nombre']?.toString() ?? '',
-                            userRole: userRole,
-                          );
-
-                          // Muestra mensaje de éxito
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('Inicio de sesión exitoso')),
-                          );
-
-                          // Navega a la pantalla principal y reemplaza la pila de navegación
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  MainNavigationScreen(userInfo: userInfo),
-                            ),
-                          );
-                        } else {
-                          // Muestra error de credenciales inválidas
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content:
-                                  Text('Usuario o contraseña incorrectos.'),
-                            ),
-                          );
-                        }
-                      } else {
-                        // Muestra error de campos incompletos
+                      final user = await _controller.authenticate(email, password);
+                      if (user != null) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content:
-                                Text('Por favor, completa todos los campos.'),
+                          const SnackBar(content: Text('Inicio de sesión exitoso')),
+                        );
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MainNavigationScreen(userInfo: user),
                           ),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Usuario o contraseña incorrectos.')),
                         );
                       }
                     },

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../service/database_service.dart';
-import 'resultados_screen.dart';
+import 'package:heartwise/service/database_service.dart';
+import 'package:heartwise/features/results/presentation/resultados_screen.dart';
 
 class AnalisisClinicoScreen extends StatefulWidget {
   final Map<String, dynamic>? userData;

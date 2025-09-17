@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:heartwise/core/services/session_service.dart';
 import 'package:heartwise/features/auth/presentation/login_screen.dart';
 import 'package:heartwise/features/navigation/presentation/main_navigation_screen.dart';
+import 'package:heartwise/features/auth/application/splash_controller.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -13,6 +13,7 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
+  final _controllerLogic = SplashController();
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
@@ -56,7 +57,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   Future<void> _checkSession() async {
     try {
-      bool hasActiveSession = await SessionService.isSessionActive();
+  bool hasActiveSession = await _controllerLogic.hasActiveSession();
 
       if (!mounted) return;
 

@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart'; // Fuentes de Google
 import 'package:heartwise/features/home/presentation/home_screen.dart'; // Home screen
 import 'package:heartwise/features/profile/presentation/perfil_screen.dart'; // Profile screen
 import 'package:heartwise/core/services/session_service.dart'; // Session service
+import 'package:heartwise/features/navigation/application/navigation_controller.dart';
 import 'package:heartwise/features/auth/presentation/login_screen.dart'; // Login screen
 
 // Clase principal para la navegación con BottomNavigationBar
@@ -20,8 +21,7 @@ class MainNavigationScreen extends StatefulWidget {
 }
 
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
-  int _currentIndex = 0; // Índice de la pestaña actual
-  int _previousIndex = 0; // Índice anterior para determinar dirección
+  final _navController = NavigationController();
   Map<String, dynamic>? _userInfoMap;
   bool _isLoading = false;
 
@@ -155,7 +155,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             duration: const Duration(milliseconds: 300),
             transitionBuilder: (Widget child, Animation<double> animation) {
               // Determinar dirección: si vamos a la derecha (índice mayor) o izquierda (índice menor)
-              final isGoingRight = _currentIndex > _previousIndex;
+              final isGoingRight = _navController.currentIndex > _navController.previousIndex;
 
               return ClipRect(
                 child: SlideTransition(
@@ -171,8 +171,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
               );
             },
             child: Container(
-              key: ValueKey<int>(_currentIndex),
-              child: _pages[_currentIndex],
+              key: ValueKey<int>(_navController.currentIndex),
+              child: _pages[_navController.currentIndex],
             ),
           ),
 
@@ -240,13 +240,12 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     required String label,
     required int index,
   }) {
-    final bool isActive = _currentIndex == index;
+  final bool isActive = _navController.currentIndex == index;
 
     return GestureDetector(
       onTap: () {
         setState(() {
-          _previousIndex = _currentIndex;
-          _currentIndex = index;
+          _navController.select(index);
         });
       },
       child: AnimatedContainer(

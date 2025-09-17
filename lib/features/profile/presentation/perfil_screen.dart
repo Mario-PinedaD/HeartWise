@@ -5,7 +5,7 @@
 import 'package:flutter/material.dart'; // Widgets base de Flutter
 import 'package:google_fonts/google_fonts.dart'; // Fuentes de Google
 import 'package:heartwise/features/profile/presentation/biomarcadores_screen.dart'; // Biomarkers screen
-import 'package:heartwise/core/services/session_service.dart'; // Session service
+import 'package:heartwise/features/profile/application/profile_controller.dart';
 import 'package:heartwise/features/auth/presentation/login_screen.dart'; // Login screen
 
 // Clase principal que representa la pantalla de perfil
@@ -20,6 +20,7 @@ class PerfilScreen extends StatefulWidget {
 
 class _PerfilScreenState extends State<PerfilScreen> {
   Map<String, dynamic>? _userInfoMap;
+  final _profileController = ProfileController();
 
   @override
   void initState() {
@@ -97,7 +98,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
     // Si el usuario confirmó, proceder con el logout
     if (shouldLogout == true) {
       // Limpiar la sesión
-      await SessionService.clearSession();
+  await _profileController.logout();
 
       // Navegar a la pantalla de login y limpiar toda la pila
       Navigator.of(context).pushAndRemoveUntil(
