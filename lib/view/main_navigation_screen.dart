@@ -6,7 +6,7 @@ import 'package:flutter/material.dart'; // Widgets base de Flutter
 import 'package:google_fonts/google_fonts.dart'; // Fuentes de Google
 import 'package:heartwise/view/home_screen.dart'; // Pantalla de inicio
 import 'package:heartwise/view/perfil_screen.dart'; // Pantalla de perfil
-import 'package:heartwise/service/session_service.dart'; // Servicio de sesiones
+import 'package:heartwise/core/services/session_service.dart'; // Servicio de sesiones
 import 'package:heartwise/view/login_screen.dart'; // Pantalla de login
 
 // Clase principal para la navegación con BottomNavigationBar

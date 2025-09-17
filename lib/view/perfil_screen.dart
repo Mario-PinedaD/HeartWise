@@ -5,7 +5,7 @@
 import 'package:flutter/material.dart'; // Widgets base de Flutter
 import 'package:google_fonts/google_fonts.dart'; // Fuentes de Google
 import 'package:heartwise/view/biomarcadores_screen.dart'; // Pantalla de biomarcadores
-import 'package:heartwise/service/session_service.dart'; // Servicio de sesiones
+import 'package:heartwise/core/services/session_service.dart'; // Servicio de sesiones
 import 'package:heartwise/view/login_screen.dart'; // Pantalla de login
 
 // Clase principal que representa la pantalla de perfil

@@ -6,9 +6,8 @@ import 'package:flutter/material.dart'; // Widgets base de Flutter
 import 'package:google_fonts/google_fonts.dart'; // Fuentes de Google
 import 'package:heartwise/view/analisis_clinico.dart'; // Pantalla de análisis clínico
 import 'package:heartwise/view/evaluacion_corporal.dart'; // Pantalla de evaluación corporal
-import 'package:mysql1/src/single_connection.dart'; // Conexión a base de datos
 import 'package:heartwise/view/resultados_cuenta.dart'; // Pantalla de resultados por correo
-import 'package:heartwise/service/session_service.dart'; // Servicio de sesiones
+import 'package:heartwise/core/services/session_service.dart'; // Servicio de sesiones
 import 'package:heartwise/view/login_screen.dart'; // Pantalla de login
 import 'package:heartwise/service/database_service.dart'; // Servicio de base de datos
 

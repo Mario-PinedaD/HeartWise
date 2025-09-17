@@ -7,7 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:heartwise/view/crear_cuenta.dart';
 import 'package:heartwise/view/main_navigation_screen.dart';
 import 'package:heartwise/service/database_service.dart';
-import 'package:heartwise/service/session_service.dart';
+import 'package:heartwise/core/services/session_service.dart';
 
 /// Widget principal para la pantalla de inicio de sesión
 /// Maneja el estado de los campos del formulario y la autenticación

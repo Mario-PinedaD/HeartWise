@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:heartwise/service/session_service.dart';
+import 'package:heartwise/core/services/session_service.dart';
 import 'package:heartwise/view/login_screen.dart';
 import 'package:heartwise/view/main_navigation_screen.dart';
 

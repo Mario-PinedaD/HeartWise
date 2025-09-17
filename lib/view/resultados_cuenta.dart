@@ -25,7 +25,8 @@ class _ResultadosPorCorreoState extends State<ResultadosPorCorreo> {
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
-        print('Datos recibidos correctamente. Respuesta del servidor: ${response.body}');
+        print(
+            'Datos recibidos correctamente. Respuesta del servidor: ${response.body}');
         return json.decode(response.body); // Retorna datos decodificados
       } else {
         print('Error al recibir datos: ${response.statusCode}');
@@ -44,15 +45,15 @@ class _ResultadosPorCorreoState extends State<ResultadosPorCorreo> {
   }
 
   Future<void> _cargarDatos() async {
-    resultados = await obtenerDatosPorCorreo(widget.correo); // Espera a que la función termine
+    resultados = await obtenerDatosPorCorreo(
+        widget.correo); // Espera a que la función termine
     setState(() {}); // Actualiza el estado para reconstruir el widget
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-      ),
+      appBar: AppBar(),
       body: error != null
           ? Center(child: Text(error!))
           : resultados != null
@@ -64,7 +65,8 @@ class _ResultadosPorCorreoState extends State<ResultadosPorCorreo> {
                       elevation: 4,
                       margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                       child: ListTile(
-                        subtitle: Text(resultado.toString()), // Muestra los resultados como texto
+                        subtitle: Text(resultado
+                            .toString()), // Muestra los resultados como texto
                       ),
                     );
                   },

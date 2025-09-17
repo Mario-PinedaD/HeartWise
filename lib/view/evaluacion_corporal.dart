@@ -6,10 +6,9 @@ import 'package:heartwise/view/resultados_screen.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:heartwise/service/database_service.dart';
+
 //import 'package:intl/intl.dart';
-
 class EvaluacionCorporalScreen extends StatefulWidget {
-
   // Constructor que recibe un Map de datos del usuario
   final Map<String, dynamic>? userData;
   final String? tipoAnalisis;
@@ -21,19 +20,621 @@ class EvaluacionCorporalScreen extends StatefulWidget {
 }
 
 class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
-  DateTime? _fechaSeleccionada;
-  int?
-      edad; // Esta será calcularda con: Fecha nacimiento - fecha actual (obteniendo solo el año)
-  String? _selectedGender;
+  int? edad; // Calculada automáticamente
   int? genero; //1 = Hombre | 2 = Mujer
-  double? peso; //Peso, no sabes leer o q?
-  double? altura; //Es lo mismo que 'Talla'
-  //Estos son para comenzar con los análisis y predicciones:
+  double? peso; // Peso en kg
+  double? altura; // Altura en cm
+
+  // Estos serán calculados automáticamente
   double? metabBasal;
   double? grasaT;
   double? imc;
   double? grasaVisc;
   double? musculo;
+
+  // Variables para marcar valores ingresados manualmente
+  bool imcManual = false;
+  bool grasaTManual = false;
+  bool musculoManual = false;
+  bool grasaViscManual = false;
+  bool metabBasalManual = false;
+
+  // Método para calcular IMC
+  void _calcularIMC() {
+    if (peso != null && altura != null) {
+      double alturaM = altura! / 100; // Convertir cm a metros
+      setState(() {
+        imc = double.parse((peso! / (alturaM * alturaM)).toStringAsFixed(1));
+      });
+    }
+  }
+
+  // Método para calcular Metabolismo Basal (Fórmula de Harris-Benedict)
+  void _calcularMetabolismoBasal() {
+    if (peso != null && altura != null && edad != null && genero != null) {
+      setState(() {
+        if (genero == 1) {
+          // Hombre
+          metabBasal = double.parse(
+              (88.362 + (13.397 * peso!) + (4.799 * altura!) - (5.677 * edad!))
+                  .toStringAsFixed(0));
+        } else {
+          // Mujer
+          metabBasal = double.parse(
+              (447.593 + (9.247 * peso!) + (3.098 * altura!) - (4.330 * edad!))
+                  .toStringAsFixed(0));
+        }
+      });
+    }
+  }
+
+  // Método para estimar porcentaje de grasa corporal (Fórmula de Jackson-Pollock)
+  void _calcularGrasaCorporal() {
+    if (imc != null && edad != null && genero != null) {
+      setState(() {
+        if (genero == 1) {
+          // Hombre
+          grasaT = double.parse(
+              ((1.20 * imc!) + (0.23 * edad!) - 16.2).toStringAsFixed(1));
+        } else {
+          // Mujer
+          grasaT = double.parse(
+              ((1.20 * imc!) + (0.23 * edad!) - 5.4).toStringAsFixed(1));
+        }
+        // Asegurar que no sea negativo
+        if (grasaT! < 0) grasaT = 0;
+      });
+    }
+  }
+
+  // Método para estimar masa muscular
+  void _calcularMasaMuscular() {
+    if (peso != null && grasaT != null) {
+      setState(() {
+        double pesoGrasa = peso! * (grasaT! / 100);
+        double pesoMagro = peso! - pesoGrasa;
+        musculo = double.parse(((pesoMagro / peso!) * 100).toStringAsFixed(1));
+      });
+    }
+  }
+
+  // Método para estimar grasa visceral
+  void _calcularGrasaVisceral() {
+    if (imc != null && edad != null && genero != null) {
+      setState(() {
+        // Estimación basada en IMC y edad
+        double factorEdad = edad! > 40 ? 1.2 : 1.0;
+        double factorGenero = genero == 1 ? 1.1 : 1.0;
+
+        if (imc! < 25) {
+          grasaVisc =
+              double.parse((2 * factorEdad * factorGenero).toStringAsFixed(1));
+        } else if (imc! < 30) {
+          grasaVisc =
+              double.parse((5 * factorEdad * factorGenero).toStringAsFixed(1));
+        } else {
+          grasaVisc =
+              double.parse((10 * factorEdad * factorGenero).toStringAsFixed(1));
+        }
+      });
+    }
+  }
+
+  // Método para calcular todos los valores automáticamente
+  void _calcularTodosLosValores() {
+    _calcularIMC();
+    _calcularMetabolismoBasal();
+    _calcularGrasaCorporal();
+    _calcularMasaMuscular();
+    _calcularGrasaVisceral();
+  }
+
+  // Método para mostrar valores calculados con opción de entrada manual
+  void _showCalculatedValueDialog(String field, double? value) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: Text(
+          field,
+          style: GoogleFonts.poppins(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: const Color(0xFFDC3644),
+          ),
+          textAlign: TextAlign.center,
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Valor calculado
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFDC3644).withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: const Color(0xFFDC3644).withOpacity(0.3),
+                ),
+              ),
+              child: Column(
+                children: [
+                  Icon(
+                    value != null ? Icons.auto_awesome : Icons.calculate,
+                    color: const Color(0xFFDC3644),
+                    size: 32,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    "Valor Calculado",
+                    style: GoogleFonts.poppins(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFFDC3644),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    value != null ? value.toString() : "Esperando...",
+                    style: GoogleFonts.poppins(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: const Color(0xFFDC3644),
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.blue.shade50,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.blue.shade200),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    value != null ? Icons.info_outline : Icons.assignment,
+                    color: Colors.blue.shade700,
+                    size: 16,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      value != null
+                          ? "También puedes ingresar tu propio valor si tienes datos externos"
+                          : "Ingresa tu peso, altura y edad para calcular automáticamente",
+                      style: GoogleFonts.poppins(
+                        fontSize: 11,
+                        color: Colors.blue.shade700,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          // Botón para entrada manual
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () {
+                Navigator.pop(context);
+                _showManualInputDialog(field, value ?? 0);
+              },
+              icon: const Icon(Icons.edit, size: 18),
+              label: Text(
+                "Ingresar Manualmente",
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFDC3644),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                elevation: 2,
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          // Botón de entendido
+          SizedBox(
+            width: double.infinity,
+            child: TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                "Entendido",
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey.shade600,
+                ),
+              ),
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Método para permitir entrada manual de valores calculados
+  void _showManualInputDialog(String field, double currentValue) {
+    TextEditingController controller =
+        TextEditingController(text: currentValue.toString());
+    String unit = "";
+    String hint = "";
+
+    // Configurar unidad y hint según el campo
+    switch (field) {
+      case "Músculo":
+      case "Grasa Total":
+        unit = "%";
+        hint = "Ej: 25.5";
+        break;
+      case "IMC":
+        unit = "";
+        hint = "Ej: 22.5";
+        break;
+      case "Grasa Visceral":
+        unit = "";
+        hint = "Ej: 8.0";
+        break;
+      case "Metabolismo":
+        unit = "kcal/día";
+        hint = "Ej: 1800";
+        break;
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: Column(
+          children: [
+            Icon(
+              Icons.edit,
+              color: const Color(0xFFDC3644),
+              size: 32,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              "Ingresar $field",
+              style: GoogleFonts.poppins(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: const Color(0xFFDC3644),
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Mostrar valor actual calculado
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.grey.shade300),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.auto_awesome,
+                    color: Colors.grey.shade600,
+                    size: 16,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    "Valor calculado: ",
+                    style: GoogleFonts.poppins(
+                      fontSize: 12,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                  Text(
+                    "$currentValue $unit",
+                    style: GoogleFonts.poppins(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey.shade700,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            // Campo de entrada
+            TextField(
+              controller: controller,
+              style: GoogleFonts.poppins(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: const Color(0xFFDC3644),
+              ),
+              keyboardType: TextInputType.numberWithOptions(decimal: true),
+              textAlign: TextAlign.center,
+              decoration: InputDecoration(
+                hintText: hint,
+                suffixText: unit,
+                labelText: "Nuevo valor",
+                labelStyle: GoogleFonts.poppins(
+                  color: const Color(0xFFDC3644),
+                  fontWeight: FontWeight.w600,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.grey.shade300),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: const Color(0xFFDC3644),
+                    width: 2,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.grey.shade300),
+                ),
+                filled: true,
+                fillColor: Colors.grey.shade50,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 16,
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.blue.shade50,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.blue.shade200),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.info_outline,
+                    color: Colors.blue.shade700,
+                    size: 16,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      "Ingrese el valor que obtuvo de su evaluación externa",
+                      style: GoogleFonts.poppins(
+                        fontSize: 11,
+                        color: Colors.blue.shade700,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          // Botón de cancelar
+          SizedBox(
+            width: double.infinity,
+            child: TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                "Cancelar",
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey.shade600,
+                ),
+              ),
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          // Botón de actualizar
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () {
+                double? newValue = double.tryParse(controller.text);
+                if (newValue != null && newValue > 0) {
+                  setState(() {
+                    // Actualizar el valor según el campo
+                    switch (field) {
+                      case "Músculo":
+                        musculo = newValue;
+                        musculoManual = true;
+                        break;
+                      case "Grasa Total":
+                        grasaT = newValue;
+                        grasaTManual = true;
+                        break;
+                      case "IMC":
+                        imc = newValue;
+                        imcManual = true;
+                        break;
+                      case "Grasa Visceral":
+                        grasaVisc = newValue;
+                        grasaViscManual = true;
+                        break;
+                      case "Metabolismo":
+                        metabBasal = newValue;
+                        metabBasalManual = true;
+                        break;
+                    }
+                  });
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        "$field actualizado manualmente",
+                        style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                      ),
+                      backgroundColor: const Color(0xFFDC3644),
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        "Por favor, ingrese un valor válido",
+                        style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                      ),
+                      backgroundColor: Colors.red,
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  );
+                }
+              },
+              icon: const Icon(Icons.check, size: 18),
+              label: Text(
+                "Actualizar Valor",
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFDC3644),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                elevation: 2,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Método para validar si el formulario está completo
+  bool _isFormValid() {
+    return peso != null && altura != null;
+  }
+
+  // Método para finalizar la evaluación
+  Future<void> _finalizarEvaluacion() async {
+    if (!_isFormValid()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Por favor, complete peso y altura"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    // Obtener edad y género del userData con conversión de tipo segura
+    var edadValue = widget.userData?['edad'];
+    int userEdad = edadValue is int
+        ? edadValue
+        : (edadValue is String ? int.tryParse(edadValue) ?? 25 : 25);
+
+    var generoValue = widget.userData?['genero'];
+    int userGenero = generoValue is int
+        ? generoValue
+        : (generoValue is String
+            ? int.tryParse(generoValue) ?? 1
+            : 1); // 1 = hombre, 2 = mujer
+
+    // Asignar valores para cálculos si no están definidos
+    if (edad == null) edad = userEdad;
+    if (genero == null) genero = userGenero;
+
+    // Calcular valores automáticamente
+    _calcularTodosLosValores();
+
+    var resultado = await DatabaseService.enviarDatos01({
+      "tipo": 1,
+      "Genero": genero,
+      "Edad": edad,
+      "Talla": altura,
+      "Peso": peso,
+      "IMC": imc,
+      "GrasaT": grasaT,
+      "Musculo": musculo,
+      "MetabBasal": metabBasal,
+      "GrasaVisc": grasaVisc,
+      "Correo": '${widget.userData?['correo']}',
+      "FechaEjecucion": DateTime.now().toIso8601String(),
+    });
+
+    var datosIngresados = {
+      "Genero": genero,
+      "Edad": edad,
+      "Talla": altura,
+      "Peso": peso,
+      "IMC": imc,
+      "GrasaT": grasaT,
+      "Musculo": musculo,
+      "MetabBasal": metabBasal,
+      "GrasaVisc": grasaVisc,
+    };
+
+    if (resultado != null) {
+      String dato1 = resultado['HCY'].toString();
+      String dato2 = resultado['HCY_Level'].toString();
+      print("Resultados: $resultado");
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => ResultadosScreen(
+                  dato1: dato1,
+                  dato2: dato2,
+                  dato3: widget.tipoAnalisis,
+                  correo: widget.userData?['nombre'],
+                  datosIngresados: datosIngresados,
+                )),
+      );
+    } else {
+      print("Error: No se recibieron datos de enviarDatos.");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error al procesar los datos.")),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +651,8 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
                 InkWell(
                   onTap: () => (Navigator.pop(context)),
                   //Navigator.pop(context),
-                  child: const Icon(Icons.arrow_back, color: Colors.white, size: 30),
+                  child: const Icon(Icons.arrow_back,
+                      color: Colors.white, size: 30),
                 ),
                 const SizedBox(height: 8),
                 Padding(
@@ -68,13 +670,10 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'La Evaluación Corporal Básica ofrece un análisis esencial de los principales indicadores físicos y '
-                        'de composición corporal del usuario. Este test es ideal para obtener una visión rápida y '
-                        'sencilla del estado físico general. Con estos datos, el usuario puede comprender mejor '
-                        'su composición física y recibir alertas tempranas sobre posibles riesgos de salud '
-                        'relacionados con el peso o la grasa visceral.',
+                        'Análisis rápido de los principales indicadores físicos y composición corporal. '
+                        'Obtén información esencial sobre tu estado físico y recibe alertas tempranas sobre posibles riesgos de salud.',
                         style: GoogleFonts.poppins(
-                          fontSize: 14,
+                          fontSize: 13,
                           color: Colors.white,
                         ),
                       ),
@@ -91,7 +690,7 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
                           const Icon(Icons.person, color: Colors.white),
                           const SizedBox(width: 8),
                           Text(
-                            '${widget.userData?['nombre'] ?? 'Nombre'}',
+                            '${widget.userData?['nombre'] ?? 'Usuario'}',
                             style: GoogleFonts.poppins(
                               color: Colors.white,
                               fontWeight: FontWeight.w600,
@@ -102,406 +701,202 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 5),
 
-                // Sección de ingreso de información
-                Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    //borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(30),
-                        topRight: Radius.circular(30)),
-                  ),
-                  padding: const EdgeInsets.all(20),
+                // Cards compactas con datos básicos directamente en fondo rojo
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Ingresa la información',
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black,
+                      // Nota informativa como encabezado
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(8),
+                          border:
+                              Border.all(color: Colors.white.withOpacity(0.4)),
                         ),
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Fila de datos (Edad y Sexo)
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          ElevatedButton(
-                            onPressed: () async {
-                              DateTime? pickedDate = await showDatePicker(
-                                  context: context,
-                                  initialDate: DateTime.now(),
-                                  firstDate: DateTime(1950),
-                                  lastDate: DateTime(2100));
-                              if (pickedDate != null) {
-                                //antes estaba _fechaSeleecionada
-                                setState(() {
-                                  _fechaSeleccionada = pickedDate;
-                                  edad = DateTime.now()
-                                          .difference(_fechaSeleccionada!)
-                                          .inDays ~/
-                                      365;
-                                });
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5)),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                const Icon(
-                                  Icons.calendar_today,
+                        child: Row(
+                          children: [
+                            Icon(Icons.analytics_outlined,
+                                color: Colors.white, size: 16),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'Biomarcadores • Los valores se calculan automáticamente o puedes ingresarlos manualmente',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 11,
                                   color: Colors.white,
+                                  height: 1.3,
+                                  fontWeight: FontWeight.w500,
                                 ),
-                                const SizedBox(
-                                  width: 8,
-                                ),
-                                Text(
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 16,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  /*Ahora lo que hace es obtener la diferencia entre las 2 fechas
-                                   Lo divide entre los días y puede obtener con precisión los años
-                                   Habría que compararla con la edad del usuario para sustituir la _fechaSeleccionada
-                                   con la fecha del usuario a la hora de registrarse
-                                  */
-                                  _fechaSeleccionada == null
-                                      ? 'Edad'
-                                      : (DateTime.now()
-                                                  .difference(
-                                                      _fechaSeleccionada!)
-                                                  .inDays ~/
-                                              365)
-                                          .toString(),
-                                ),
-                              ],
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: () {},
-                            // No necesita acción aquí, el PopupMenuButton manejará el tap
-                            style: TextButton.styleFrom(
-                              backgroundColor: Colors.red, // Fondo rojo
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(
-                                    8), // Bordes redondeados
                               ),
                             ),
-                            child: PopupMenuButton<String>(
-                              onSelected: (String newValue) {
-                                setState(() {
-                                  _selectedGender = newValue;
-                                  if (_selectedGender == "Hombre") {
-                                    genero = 1;
-                                  } else {
-                                    genero = 2;
-                                  }
-                                });
-                              },
-                              color: Colors.white,
-                              itemBuilder: (BuildContext context) => [
-                                const PopupMenuItem(
-                                    value: "Hombre", child: Text("Hombre")),
-                                const PopupMenuItem(
-                                    value: "Mujer", child: Text("Mujer")),
-                              ],
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const Icon(Icons.male, color: Colors.white),
-                                  // Icono en blanco
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    _selectedGender ?? "Sexo",
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white, // Texto en blanco
-                                    ),
-                                  ),
-                                  const Icon(Icons.arrow_drop_down,
-                                      color: Colors.white),
-                                  // Flecha blanca
-                                ],
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-
-                      // Fila de datos (Peso y Altura)
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          ElevatedButton.icon(
-                            onPressed: () => _showInputDialog(context, "Peso"),
-                            icon: const Icon(
-                              Icons.scale,
-                              color: Colors.white,
-                            ),
-                            label: Text(
-                              peso == null ? "Peso" : "$peso kg",
-                              style: GoogleFonts.poppins(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                            ),
-                          ),
-                          ElevatedButton.icon(
-                            onPressed: () =>
-                                _showInputDialog(context, "Altura"),
-                                //_mostrarDialog(context,"Altura", altura, "cm", onValueChanged: (newValue){setState(() {altura = newValue;});}),
-                            icon: const Icon(
-                              Icons.height,
-                              color: Colors.white,
-                            ),
-                            label: Text(
-                              altura == null ? "Altura" : "$altura cm",
-                              style: GoogleFonts.poppins(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-
-                      // TERCER FILA (METABOLISMO Y GRASA TOTAL)
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          ElevatedButton.icon(
-                            onPressed: () =>
-                                _showInputDialog(context, "Músculo"),
-                            icon: const Icon(
-                              Icons.fitness_center_rounded,
-                              color: Colors.white,
-                            ),
-                            label: Text(
-                              musculo == null ? "Músculo" : "$musculo%",
-                              style: GoogleFonts.poppins(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                            ),
-                          ),
-                          ElevatedButton.icon(
-                            onPressed: () =>
-                                _showInputDialog(context, "Grasa Total"),
-                            icon: const Icon(
-                              Icons.opacity,
-                              color: Colors.white,
-                            ),
-                            label: Text(
-                              grasaT == null ? "Grasa" : "$grasaT%",
-                              style: GoogleFonts.poppins(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(
-                        height: 20,
-                      ),
-
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          ElevatedButton.icon(
-                            onPressed: () => _showInputDialog(context, "IMC"),
-                            icon: const Icon(
-                              Icons.monitor_weight,
-                              color: Colors.white,
-                            ),
-                            label: Text(
-                              imc == null ? "IMC" : "$imc",
-                              style: GoogleFonts.poppins(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                            ),
-                          ),
-                          ElevatedButton.icon(
-                            onPressed: () =>
-                                _showInputDialog(context, "Grasa Visceral"),
-                            icon: const Icon(
-                              Icons.opacity_outlined,
-                              color: Colors.white,
-                            ),
-                            label: Text(
-                              grasaVisc == null
-                                  ? "Grasa Visceral"
-                                  : "$grasaVisc%",
-                              style: GoogleFonts.poppins(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ElevatedButton.icon(
-                            onPressed: () =>
-                                _showInputDialog(context, "Metabolismo"),
-                            icon: const Icon(
-                              Icons.local_fire_department,
-                              color: Colors.white,
-                            ),
-                            label: Text(
-                              metabBasal == null
-                                  ? "Metabolismo"
-                                  : "$metabBasal",
-                              style: GoogleFonts.poppins(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
 
                       const SizedBox(height: 20),
 
-                      // Botón Finalizar
-                      ElevatedButton(
-                        onPressed: () async {
-                          var resultado = await DatabaseService.enviarDatos01({
-                            "tipo": 1,
-                            "Genero": 1,
-                            "Edad": 19,
-                            "Talla": 161,
-                            "Peso": 59.8,
-                            "IMC": 23.1,
-                            "GrasaT": 37.1,
-                            "Musculo": 25.1,
-                            "MetabBasal": 1285.5,
-                            "GrasaVisc": 4,
-                            // "Colesterol": 159,
-                            // "Trigliceridos": 41,
-                            // "Hdl": 36,
-                            // "Ldl": 50,
-                            // "Vldl": 1658,
-                            // "alu": 49,
-                            // "line": 38,
-                            // "sat": 81,
-                            "Correo": '${widget.userData?['correo']}',
-                          });
-
-                          var datosIngresados = {
-                            "Genero": genero,
-                            "Edad": edad,
-                            "Talla": altura,
-                            "Peso": peso,
-                            "IMC": imc,
-                            "GrasaT": grasaT,
-                            "Musculo": musculo,
-                            "MetabBasal": metabBasal,
-                            "GrasaVisc": grasaVisc,
-                          };
-
-                          // Verifica si la función enviarDatos devolvió un resultado exitoso (JSON no nulo)
-                          if (resultado != null) {
-                            // Extrae los datos que necesitas del JSON
-                            String dato1 = resultado['HCY'].toString(); // Reemplaza 'dato1' con la clave real del primer dato
-                            String dato2 = resultado['HCY_Level'].toString(); // Reemplaza 'dato2' con la clave real del segundo dato
-                            print("Resultados: $resultado");
-
-                            // Navega a la pantalla ResultadosScreen y pasa los datos
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => ResultadosScreen(dato1: dato1, dato2: dato2, dato3: widget.tipoAnalisis, correo: widget.userData?['nombre'], datosIngresados: datosIngresados,)),
-                            );
-                          } else {
-                            // Maneja el caso en que la función enviarDatos no devolvió datos (opcional)
-                            print("Error: No se recibieron datos de enviarDatos.");
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text("Error al procesar los datos.")),
-                            );
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                      // Cards compactas con datos básicos - Agrupación mejorada
+                      Row(
+                        children: [
+                          _buildCompactDataCard(
+                            peso == null ? "---" : "$peso kg",
+                            "Peso",
+                            Icons.monitor_weight,
+                            () => _showInputDialog(context, "Peso"),
                           ),
-                          padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 12),
+                          const SizedBox(width: 8),
+                          _buildCompactDataCard(
+                            altura == null ? "---" : "$altura cm",
+                            "Altura",
+                            Icons.height,
+                            () => _showInputDialog(context, "Talla"),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          _buildCompactDataCard(
+                            musculo == null
+                                ? "Completa datos básicos"
+                                : "$musculo%",
+                            "Masa Muscular",
+                            Icons.fitness_center,
+                            () =>
+                                _showCalculatedValueDialog("Músculo", musculo),
+                            isCalculated: true,
+                            isManual: musculoManual,
+                          ),
+                          const SizedBox(width: 8),
+                          _buildCompactDataCard(
+                            grasaT == null
+                                ? "Completa datos básicos"
+                                : "$grasaT%",
+                            "Grasa Total",
+                            Icons.opacity,
+                            () => _showCalculatedValueDialog(
+                                "Grasa Total", grasaT),
+                            isCalculated: true,
+                            isManual: grasaTManual,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          _buildCompactDataCard(
+                            imc == null ? "Completa datos básicos" : "$imc",
+                            "IMC",
+                            Icons.assessment,
+                            () => _showCalculatedValueDialog("IMC", imc),
+                            isCalculated: true,
+                            isManual: imcManual,
+                          ),
+                          const SizedBox(width: 8),
+                          _buildCompactDataCard(
+                            grasaVisc == null
+                                ? "Completa datos básicos"
+                                : "$grasaVisc",
+                            "Grasa Visceral",
+                            Icons.opacity_outlined,
+                            () => _showCalculatedValueDialog(
+                                "Grasa Visceral", grasaVisc),
+                            isCalculated: true,
+                            isManual: grasaViscManual,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      // Card individual para Metabolismo
+                      _buildFullWidthDataCard(
+                        metabBasal == null
+                            ? "Completa datos básicos"
+                            : "${metabBasal!.toStringAsFixed(0)} kcal/día",
+                        "Metabolismo Basal",
+                        Icons.local_fire_department,
+                        () => _showCalculatedValueDialog(
+                            "Metabolismo", metabBasal),
+                        isCalculated: true,
+                        isManual: metabBasalManual,
+                      ),
+
+                      const SizedBox(height: 24),
+
+                      // Botón Finalizar
+                      Container(
+                        width: double.infinity,
+                        height: 52,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.white,
+                              Colors.grey.shade50,
+                            ],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: const Color(0xFFDC3644).withOpacity(0.3),
+                            width: 1.5,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 8,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
                         ),
-                        child: Text(
-                          'Finalizar',
-                          style: GoogleFonts.poppins(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                        child: ElevatedButton(
+                          onPressed: _isFormValid()
+                              ? () async {
+                                  await _finalizarEvaluacion();
+                                }
+                              : null,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.transparent,
+                            disabledBackgroundColor: Colors.grey.shade100,
+                            foregroundColor: const Color(0xFFDC3644),
+                            disabledForegroundColor: Colors.grey.shade400,
+                            shadowColor: Colors.transparent,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            elevation: 0,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.analytics_rounded,
+                                color: _isFormValid()
+                                    ? const Color(0xFFDC3644)
+                                    : Colors.grey.shade400,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Finalizar Evaluación',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: _isFormValid()
+                                      ? const Color(0xFFDC3644)
+                                      : Colors.grey.shade400,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
+
+                      const SizedBox(height: 20),
                     ],
                   ),
                 ),
@@ -510,108 +905,6 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
           ),
         ),
       ),
-    );
-  }
-
-  // Widget reutilizable para las tarjetas de información
-  Widget infoCard(IconData icon, String label, String value) {
-    return Card(
-      color: Colors.red[600],
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      elevation: 4,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-        child: Row(
-          children: [
-            Icon(icon, color: Colors.white),
-            const SizedBox(width: 8),
-            Text(
-              '$label $value',
-              style: GoogleFonts.poppins(
-                fontSize: 16,
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _mostrarDialog(
-    BuildContext context,
-    String titulo,
-    double variable,
-    String unidad,
-    ValueChanged<double> onValueChanged,
-  ) {
-    TextEditingController controller = TextEditingController(text: variable.toString());
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(
-            "Ingrese: $titulo ($unidad)",
-            style: GoogleFonts.poppins(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          backgroundColor: Colors.white,
-          content: TextField(
-            controller: controller,
-            style: GoogleFonts.poppins(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-            keyboardType: TextInputType.number,
-            decoration: const InputDecoration(hintText: "Ingrese el valor"),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text(
-                "Cancelar",
-                style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                double? value = double.tryParse(controller.text);
-                if (value != null && value >= 0) {
-                  onValueChanged(value);
-                  Navigator.pop(context);
-                }
-              },
-              style: TextButton.styleFrom(
-                backgroundColor: Colors.red,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              ),
-              child: Text(
-                "Aceptar",
-                style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ],
-        );
-      },
     );
   }
 
@@ -625,20 +918,52 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
           title: Text(
             "Ingrese su $type",
             style: GoogleFonts.poppins(
-              fontSize: 16,
+              fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
             textAlign: TextAlign.center,
           ),
           backgroundColor: Colors.white,
-          content: TextField(
-            controller: controller,
-            style: GoogleFonts.poppins(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-            keyboardType: TextInputType.number,
-            decoration: const InputDecoration(hintText: ""),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: controller,
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  hintText: type == "Peso" ? "Ej: 70" : "Ej: 170",
+                  suffixText: type == "Peso" ? "kg" : "cm",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: const Color(0xFFDC3644)),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              if (type == "Peso" || type == "Talla" || type == "Altura")
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    "Los demás valores se calcularán automáticamente",
+                    style: GoogleFonts.poppins(
+                      fontSize: 12,
+                      color: Colors.blue.shade700,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+            ],
           ),
           actions: [
             TextButton(
@@ -648,39 +973,79 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
               child: Text(
                 "Cancelar",
                 style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.bold, color: Colors.black),
+                    fontWeight: FontWeight.bold, color: Colors.grey.shade600),
               ),
             ),
-            TextButton(
+            ElevatedButton(
               onPressed: () {
                 double? value = double.tryParse(controller.text);
-                if (value != null && value >= 0) {
+                if (value != null && value > 0) {
                   setState(() {
                     if (type == "Peso") {
                       peso = value;
-                    } else if (type == "Altura") {
-                      altura = value.toDouble();
-                    } else if (type == "Músculo") {
-                      musculo = value;
-                    } else if (type == "Grasa Total") {
-                      grasaT = value;
-                    } else if (type == "IMC") {
-                      imc = value;
-                    } else if (type == "Grasa Visceral") {
-                      grasaVisc = value;
-                    } else {
-                      metabBasal = value;
+                      // Asignar edad y género del usuario si no están definidos
+                      if (edad == null) {
+                        var edadValue = widget.userData?['edad'];
+                        edad = edadValue is int
+                            ? edadValue
+                            : (edadValue is String
+                                ? int.tryParse(edadValue) ?? 25
+                                : 25);
+                      }
+                      if (genero == null) {
+                        var generoValue = widget.userData?['genero'];
+                        genero = generoValue is int
+                            ? generoValue
+                            : (generoValue is String
+                                ? int.tryParse(generoValue) ?? 1
+                                : 1);
+                      }
+                      // Calcular valores automáticamente si ya tenemos altura
+                      if (altura != null) {
+                        _calcularTodosLosValores();
+                      }
+                    } else if (type == "Altura" || type == "Talla") {
+                      altura = value;
+                      // Asignar edad y género del usuario si no están definidos
+                      if (edad == null) {
+                        var edadValue = widget.userData?['edad'];
+                        edad = edadValue is int
+                            ? edadValue
+                            : (edadValue is String
+                                ? int.tryParse(edadValue) ?? 25
+                                : 25);
+                      }
+                      if (genero == null) {
+                        var generoValue = widget.userData?['genero'];
+                        genero = generoValue is int
+                            ? generoValue
+                            : (generoValue is String
+                                ? int.tryParse(generoValue) ?? 1
+                                : 1);
+                      }
+                      // Calcular valores automáticamente si ya tenemos peso
+                      if (peso != null) {
+                        _calcularTodosLosValores();
+                      }
                     }
                   });
                   Navigator.pop(context);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("Por favor, ingrese un valor válido"),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
                 }
               },
-              style: TextButton.styleFrom(
-                backgroundColor: Colors.red,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFDC3644),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               ),
               child: Text(
                 "Aceptar",
@@ -691,6 +1056,215 @@ class _EvaluacionCorporalScreen extends State<EvaluacionCorporalScreen> {
           ],
         );
       },
+    );
+  }
+
+  /// Widget para construir cards compactas de datos
+  Widget _buildCompactDataCard(
+    String value,
+    String label,
+    IconData icon,
+    VoidCallback onTap, {
+    bool isCalculated = false,
+    bool isManual = false,
+  }) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          height: 80, // Altura más compacta
+          padding: const EdgeInsets.all(12), // Padding optimizado
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10), // Radio más pequeño
+            border: Border.all(
+              color: Colors.grey.shade200,
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.06), // Sombra más sutil
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(3),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFDC3644).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Icon(
+                      icon,
+                      color: const Color(0xFFDC3644),
+                      size: 14,
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      label,
+                      style: GoogleFonts.poppins(
+                        fontSize: 11,
+                        color: Colors.grey.shade600,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+              Expanded(
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    value,
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: value.contains("Completa") || value.contains("---")
+                          ? Colors.grey.shade400
+                          : Colors.black87,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ),
+              if (isCalculated)
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                  decoration: BoxDecoration(
+                    color:
+                        isManual ? Colors.orange.shade100 : Colors.blue.shade50,
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                  child: Text(
+                    isManual ? "Manual" : "Auto",
+                    style: GoogleFonts.poppins(
+                      fontSize: 8,
+                      color: isManual
+                          ? Colors.orange.shade700
+                          : Colors.blue.shade700,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Widget para construir card de ancho completo
+  Widget _buildFullWidthDataCard(
+    String value,
+    String label,
+    IconData icon,
+    VoidCallback onTap, {
+    bool isCalculated = false,
+    bool isManual = false,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
+        height: 80, // Altura consistente
+        padding: const EdgeInsets.all(12), // Padding optimizado
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10), // Radio más pequeño
+          border: Border.all(
+            color: Colors.grey.shade200,
+            width: 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.06), // Sombra más sutil
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(3),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFDC3644).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Icon(
+                    icon,
+                    color: const Color(0xFFDC3644),
+                    size: 14,
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  label,
+                  style: GoogleFonts.poppins(
+                    fontSize: 11,
+                    color: Colors.grey.shade600,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const Spacer(),
+                if (isCalculated)
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                    decoration: BoxDecoration(
+                      color: isManual
+                          ? Colors.orange.shade100
+                          : Colors.blue.shade50,
+                      borderRadius: BorderRadius.circular(3),
+                    ),
+                    child: Text(
+                      isManual ? "Manual" : "Auto",
+                      style: GoogleFonts.poppins(
+                        fontSize: 8,
+                        color: isManual
+                            ? Colors.orange.shade700
+                            : Colors.blue.shade700,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            Expanded(
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  value,
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: value.contains("Completa") || value.contains("---")
+                        ? Colors.grey.shade400
+                        : Colors.black87,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
