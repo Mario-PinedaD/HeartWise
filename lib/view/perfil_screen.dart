@@ -4,64 +4,26 @@
 // Importaciones necesarias para el funcionamiento
 import 'package:flutter/material.dart'; // Widgets base de Flutter
 import 'package:google_fonts/google_fonts.dart'; // Fuentes de Google
-import 'package:heartwise/view/analisis_clinico.dart'; // Pantalla de análisis clínico
-import 'package:heartwise/view/evaluacion_corporal.dart'; // Pantalla de evaluación corporal
-import 'package:mysql1/src/single_connection.dart'; // Conexión a base de datos
-import 'package:heartwise/view/resultados_cuenta.dart'; // Pantalla de resultados por correo
+import 'package:heartwise/view/biomarcadores_screen.dart'; // Pantalla de biomarcadores
 import 'package:heartwise/service/session_service.dart'; // Servicio de sesiones
 import 'package:heartwise/view/login_screen.dart'; // Pantalla de login
-import 'package:heartwise/service/database_service.dart'; // Servicio de base de datos
 
-// Clase principal que representa la pantalla de inicio
-// ignore: camel_case_types
-class home_screen extends StatefulWidget {
-  // Propiedades de la clase
+// Clase principal que representa la pantalla de perfil
+class PerfilScreen extends StatefulWidget {
   final Map<String, dynamic>? userInfo; // Información del usuario
 
-  // Constructor de la clase
-  home_screen({super.key, this.userInfo});
+  const PerfilScreen({super.key, this.userInfo});
 
   @override
-  State<home_screen> createState() => _HomeScreenState();
+  State<PerfilScreen> createState() => _PerfilScreenState();
 }
 
-class _HomeScreenState extends State<home_screen> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: HomeScreenContent(userInfo: widget.userInfo),
-    );
-  }
-}
-
-// Widget de contenido para usar dentro de la navegación
-class HomeScreenContent extends StatelessWidget {
-  final Map<String, dynamic>? userInfo;
-
-  const HomeScreenContent({super.key, this.userInfo});
-
-  @override
-  Widget build(BuildContext context) {
-    return _HomeContentWidget(userInfo: userInfo);
-  }
-}
-
-class _HomeContentWidget extends StatefulWidget {
-  final Map<String, dynamic>? userInfo;
-
-  const _HomeContentWidget({this.userInfo});
-
-  @override
-  State<_HomeContentWidget> createState() => _HomeContentWidgetState();
-}
-
-class _HomeContentWidgetState extends State<_HomeContentWidget> {
+class _PerfilScreenState extends State<PerfilScreen> {
   Map<String, dynamic>? _userInfoMap;
 
   @override
   void initState() {
     super.initState();
-    // Cargar datos del usuario desde el widget padre
     _loadUserDataFromParent();
   }
 
@@ -189,42 +151,61 @@ class _HomeContentWidgetState extends State<_HomeContentWidget> {
       );
     }
 
-    return _buildHomeContent(context);
+    return _buildPerfilContent(context);
   }
 
-  Widget _buildHomeContent(BuildContext context) {
+  Widget _buildPerfilContent(BuildContext context) {
     // Usar los datos cargados
     Map<String, dynamic> userInfoMap = _userInfoMap!;
 
     // Obtención del rol del usuario (por defecto 'publico')
     String rol = userInfoMap['rol'] ?? 'publico';
-    print('DEBUG - Rol final utilizado en home_screen: $rol');
+    String email = userInfoMap['correo'] ?? userInfoMap['email'] ?? '';
+    String nombre = userInfoMap['nombre'] ?? 'Usuario';
 
-    // Lista de pruebas disponibles con sus características
-    final List<Map<String, dynamic>> datos = [
+    // Lista de opciones del perfil
+    final List<Map<String, dynamic>> opcionesPerfil = [
       {
-        'titulo': 'Evaluación Corporal Básica',
-        'descripcion':
-            'Evalúa tus parámetros físicos clave, como peso, IMC y composición corporal para un control básico de tu salud.',
-        'icono': Icons.fitness_center,
-        'color': const Color(0xFF4CAF50), // Cambiado a verde
-        'disponible': true, // Siempre disponible
-        'direc': EvaluacionCorporalScreen(
-          userData: userInfoMap,
-          tipoAnalisis: 'AnalisisClinicosv1',
-        )
+        'titulo': 'Datos Personales',
+        'descripcion': 'Edita tu información personal y de contacto',
+        'icono': Icons.person,
+        'color': const Color(0xFF4CAF50),
+        'onTap': () => _showDatosPersonales(context),
       },
       {
-        'titulo': 'Análisis Clínico Integral',
+        'titulo': 'Biomarcadores',
         'descripcion':
-            'Análisis completo con laboratorios, perfil lipídico y evaluación cardiovascular integral.',
+            'Gestiona tus biomarcadores para evaluaciones más precisas',
         'icono': Icons.biotech,
         'color': const Color(0xFF2196F3),
-        'disponible': rol == 'medico' ? true : false, // Solo para médicos
-        'direc': AnalisisClinicoScreen(
-          userData: userInfoMap,
-          tipoAnalisis: 'AnalisisCrlinicosv2',
-        )
+        'onTap': () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    BiomarcadoresScreen(userInfo: userInfoMap),
+              ),
+            ),
+      },
+      {
+        'titulo': 'Historial Médico',
+        'descripcion': 'Revisa tu historial de evaluaciones y resultados',
+        'icono': Icons.history,
+        'color': const Color(0xFFFF9800),
+        'onTap': () => _showHistorialMedico(context),
+      },
+      {
+        'titulo': 'Configuración',
+        'descripcion': 'Preferencias de la aplicación y notificaciones',
+        'icono': Icons.settings,
+        'color': const Color(0xFF9C27B0),
+        'onTap': () => _showConfiguracion(context),
+      },
+      {
+        'titulo': 'Ayuda y Soporte',
+        'descripcion': 'Obtén ayuda o contacta con nuestro equipo de soporte',
+        'icono': Icons.help_outline,
+        'color': const Color(0xFF607D8B),
+        'onTap': () => _showAyuda(context),
       },
     ];
 
@@ -273,14 +254,26 @@ class _HomeContentWidgetState extends State<_HomeContentWidget> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      // Logo blanco
-                      Image.asset(
-                        'lib/sources/logo-white.png',
-                        height: 40,
-                        width: 40,
+                      // Avatar del usuario
+                      Container(
+                        width: 60,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.3),
+                            width: 2,
+                          ),
+                        ),
+                        child: Icon(
+                          Icons.person,
+                          color: Colors.white,
+                          size: 30,
+                        ),
                       ),
 
-                      const SizedBox(width: 12),
+                      const SizedBox(width: 16),
 
                       // Información del usuario
                       Expanded(
@@ -290,8 +283,7 @@ class _HomeContentWidgetState extends State<_HomeContentWidget> {
                           children: [
                             // Nombre y apellido
                             Text(
-                              _extractFirstNameAndLastName(
-                                  userInfoMap['nombre'] ?? 'Usuario'),
+                              _extractFirstNameAndLastName(nombre),
                               style: GoogleFonts.poppins(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -299,13 +291,35 @@ class _HomeContentWidgetState extends State<_HomeContentWidget> {
                               ),
                             ),
 
-                            // Texto de bienvenida (segunda línea)
+                            // Email
                             Text(
-                              'Bienvenido de vuelta!',
+                              email.isNotEmpty ? email : 'Email no disponible',
                               style: GoogleFonts.poppins(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.white.withOpacity(0.9),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white.withOpacity(0.95),
+                              ),
+                            ),
+
+                            // Rol
+                            Container(
+                              margin: const EdgeInsets.only(top: 4),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Text(
+                                rol.toUpperCase(),
+                                style: GoogleFonts.poppins(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  letterSpacing: 0.5,
+                                ),
                               ),
                             ),
                           ],
@@ -343,7 +357,7 @@ class _HomeContentWidgetState extends State<_HomeContentWidget> {
                       ),
                       const SizedBox(width: 12),
                       Text(
-                        'Evaluaciones Médicas',
+                        'Mi Perfil',
                         style: GoogleFonts.poppins(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -355,30 +369,26 @@ class _HomeContentWidgetState extends State<_HomeContentWidget> {
                 ),
               ),
 
-              // Grid de pruebas médicas
+              // Lista de opciones del perfil
               SliverPadding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                sliver: SliverGrid(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 0.85,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                  ),
+                sliver: SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
-                      final item = datos[index];
-                      return _buildModernTestCard(
-                        context: context,
-                        titulo: item['titulo'],
-                        descripcion: item['descripcion'],
-                        icono: item['icono'],
-                        color: item['color'],
-                        disponible: item['disponible'],
-                        direc: item['direc'],
+                      final opcion = opcionesPerfil[index];
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        child: _buildPerfilOption(
+                          context: context,
+                          titulo: opcion['titulo'],
+                          descripcion: opcion['descripcion'],
+                          icono: opcion['icono'],
+                          color: opcion['color'],
+                          onTap: opcion['onTap'],
+                        ),
                       );
                     },
-                    childCount: datos.length,
+                    childCount: opcionesPerfil.length,
                   ),
                 ),
               ),
@@ -394,26 +404,19 @@ class _HomeContentWidgetState extends State<_HomeContentWidget> {
     );
   }
 
-  // Widget moderno para las cards de pruebas médicas
-  Widget _buildModernTestCard({
+  // Widget para las opciones del perfil
+  Widget _buildPerfilOption({
     required BuildContext context,
     required String titulo,
     required String descripcion,
     required IconData icono,
     required Color color,
-    required bool disponible,
-    required Widget direc,
+    required VoidCallback onTap,
   }) {
     return GestureDetector(
-      onTap: disponible
-          ? () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => direc),
-              );
-            }
-          : null,
+      onTap: onTap,
       child: Container(
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
@@ -425,145 +428,151 @@ class _HomeContentWidgetState extends State<_HomeContentWidget> {
             ),
           ],
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
-            // Header con ícono y disponibilidad
+            // Ícono
             Container(
-              height: 60,
-              width: double.infinity,
+              width: 50,
+              height: 50,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: disponible
-                      ? [
-                          color,
-                          color.withOpacity(0.8),
-                        ]
-                      : [
-                          Colors.grey.shade300,
-                          Colors.grey.shade400,
-                        ],
+                  colors: [
+                    color,
+                    color.withOpacity(0.8),
+                  ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(16),
-                  topRight: Radius.circular(16),
-                ),
+                borderRadius: BorderRadius.circular(12),
               ),
-              child: Stack(
+              child: Icon(
+                icono,
+                color: Colors.white,
+                size: 24,
+              ),
+            ),
+
+            const SizedBox(width: 16),
+
+            // Contenido
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Positioned(
-                    right: -10,
-                    top: -10,
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        shape: BoxShape.circle,
-                      ),
+                  Text(
+                    titulo,
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
                     ),
                   ),
-                  Center(
-                    child: Icon(
-                      icono,
-                      color: Colors.white,
-                      size: 28,
+                  const SizedBox(height: 4),
+                  Text(
+                    descripcion,
+                    style: GoogleFonts.poppins(
+                      fontSize: 12,
+                      color: Colors.grey.shade600,
+                      height: 1.3,
                     ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  if (!disponible)
-                    Positioned(
-                      top: 8,
-                      right: 8,
-                      child: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          color: Colors.orange,
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: const Icon(
-                          Icons.lock,
-                          color: Colors.white,
-                          size: 12,
-                        ),
-                      ),
-                    ),
                 ],
               ),
             ),
 
-            // Contenido
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      titulo,
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color:
-                            disponible ? Colors.black87 : Colors.grey.shade600,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-
-                    const SizedBox(height: 8),
-
-                    Expanded(
-                      child: Text(
-                        descripcion,
-                        style: GoogleFonts.poppins(
-                          fontSize: 11,
-                          color: disponible
-                              ? Colors.grey.shade600
-                              : Colors.grey.shade500,
-                          height: 1.3,
-                        ),
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    // Estado
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      decoration: BoxDecoration(
-                        color: disponible
-                            ? color.withOpacity(0.1)
-                            : Colors.grey.shade100,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        disponible ? 'DISPONIBLE' : 'SOLO MÉDICOS',
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.poppins(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          color: disponible ? color : Colors.grey.shade600,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            // Flecha
+            Icon(
+              Icons.arrow_forward_ios,
+              color: Colors.grey.shade400,
+              size: 16,
             ),
           ],
         ),
       ),
     );
   }
+
+  // Métodos para mostrar las diferentes pantallas/diálogos
+  void _showDatosPersonales(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          'Datos Personales',
+          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+        ),
+        content: const Text('Funcionalidad en desarrollo'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cerrar'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showHistorialMedico(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          'Historial Médico',
+          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+        ),
+        content: const Text('Funcionalidad en desarrollo'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cerrar'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showConfiguracion(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          'Configuración',
+          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+        ),
+        content: const Text('Funcionalidad en desarrollo'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cerrar'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showAyuda(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          'Ayuda y Soporte',
+          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+        ),
+        content: const Text('Funcionalidad en desarrollo'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cerrar'),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
-// CustomPainter para crear un patrón de fondo sutil
+// CustomPainter para crear un patrón de fondo sutil (reutilizado del HomeScreen)
 class BackgroundPatternPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
@@ -599,29 +608,4 @@ class BackgroundPatternPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => false;
-}
-
-// Placeholder para PerfilGeneticoScreen (debe ser implementado)
-class PerfilGeneticoScreen extends StatelessWidget {
-  final Map<String, dynamic>? userData;
-  final String? tipoAnalisis;
-
-  const PerfilGeneticoScreen({
-    Key? key,
-    this.userData,
-    this.tipoAnalisis,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Perfil Genético'),
-        backgroundColor: const Color(0xFF4CAF50),
-      ),
-      body: const Center(
-        child: Text('Funcionalidad en desarrollo'),
-      ),
-    );
-  }
 }
