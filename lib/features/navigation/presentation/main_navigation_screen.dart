@@ -4,10 +4,10 @@
 // Importaciones necesarias para el funcionamiento
 import 'package:flutter/material.dart'; // Widgets base de Flutter
 import 'package:google_fonts/google_fonts.dart'; // Fuentes de Google
-import 'package:heartwise/view/home_screen.dart'; // Pantalla de inicio
-import 'package:heartwise/view/perfil_screen.dart'; // Pantalla de perfil
-import 'package:heartwise/core/services/session_service.dart'; // Servicio de sesiones
-import 'package:heartwise/view/login_screen.dart'; // Pantalla de login
+import 'package:heartwise/features/home/presentation/home_screen.dart'; // Home screen
+import 'package:heartwise/features/profile/presentation/perfil_screen.dart'; // Profile screen
+import 'package:heartwise/core/services/session_service.dart'; // Session service
+import 'package:heartwise/features/auth/presentation/login_screen.dart'; // Login screen
 
 // Clase principal para la navegación con BottomNavigationBar
 class MainNavigationScreen extends StatefulWidget {

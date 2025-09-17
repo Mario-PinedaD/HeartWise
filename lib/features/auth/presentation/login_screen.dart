@@ -5,7 +5,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:heartwise/view/crear_cuenta.dart';
-import 'package:heartwise/view/main_navigation_screen.dart';
+import 'package:heartwise/features/navigation/presentation/main_navigation_screen.dart';
 import 'package:heartwise/service/database_service.dart';
 import 'package:heartwise/core/services/session_service.dart';
 

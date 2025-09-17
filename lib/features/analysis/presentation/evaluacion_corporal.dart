@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:heartwise/view/resultados_screen.dart';
+import 'package:heartwise/features/results/presentation/resultados_screen.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:heartwise/service/database_service.dart';

@@ -4,9 +4,9 @@
 // Importaciones necesarias para el funcionamiento
 import 'package:flutter/material.dart'; // Widgets base de Flutter
 import 'package:google_fonts/google_fonts.dart'; // Fuentes de Google
-import 'package:heartwise/view/biomarcadores_screen.dart'; // Pantalla de biomarcadores
-import 'package:heartwise/core/services/session_service.dart'; // Servicio de sesiones
-import 'package:heartwise/view/login_screen.dart'; // Pantalla de login
+import 'package:heartwise/features/profile/presentation/biomarcadores_screen.dart'; // Biomarkers screen
+import 'package:heartwise/core/services/session_service.dart'; // Session service
+import 'package:heartwise/features/auth/presentation/login_screen.dart'; // Login screen
 
 // Clase principal que representa la pantalla de perfil
 class PerfilScreen extends StatefulWidget {

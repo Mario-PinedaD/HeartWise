@@ -4,11 +4,11 @@
 // Importaciones necesarias para el funcionamiento
 import 'package:flutter/material.dart'; // Widgets base de Flutter
 import 'package:google_fonts/google_fonts.dart'; // Fuentes de Google
-import 'package:heartwise/view/analisis_clinico.dart'; // Pantalla de análisis clínico
-import 'package:heartwise/view/evaluacion_corporal.dart'; // Pantalla de evaluación corporal
-import 'package:heartwise/view/resultados_cuenta.dart'; // Pantalla de resultados por correo
+import 'package:heartwise/features/analysis/presentation/analisis_clinico.dart'; // Clinical analysis
+import 'package:heartwise/features/analysis/presentation/evaluacion_corporal.dart'; // Body evaluation
+import 'package:heartwise/features/results/presentation/resultados_cuenta.dart'; // Results by email
 import 'package:heartwise/core/services/session_service.dart'; // Servicio de sesiones
-import 'package:heartwise/view/login_screen.dart'; // Pantalla de login
+import 'package:heartwise/features/auth/presentation/login_screen.dart'; // Login screen
 import 'package:heartwise/service/database_service.dart'; // Servicio de base de datos
 
 // Clase principal que representa la pantalla de inicio
