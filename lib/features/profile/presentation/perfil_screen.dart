@@ -98,7 +98,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
     // Si el usuario confirmó, proceder con el logout
     if (shouldLogout == true) {
       // Limpiar la sesión
-  await _profileController.logout();
+      await _profileController.logout();
 
       // Navegar a la pantalla de login y limpiar toda la pila
       Navigator.of(context).pushAndRemoveUntil(

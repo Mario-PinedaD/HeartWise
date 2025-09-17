@@ -7,8 +7,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:heartwise/view/crear_cuenta.dart';
 import 'package:heartwise/features/navigation/presentation/main_navigation_screen.dart';
 import 'package:heartwise/features/auth/application/login_controller.dart';
-import 'package:heartwise/service/database_service.dart';
-import 'package:heartwise/core/services/session_service.dart';
+// import 'package:heartwise/service/database_service.dart';
+// import 'package:heartwise/core/services/session_service.dart';
 
 /// Widget principal para la pantalla de inicio de sesión
 /// Maneja el estado de los campos del formulario y la autenticación
@@ -229,20 +229,25 @@ class _LoginScreen extends State<LoginScreen> {
                       String password = _passwordController.text;
 
                       // Validación de campos completos
-                      final user = await _controller.authenticate(email, password);
+                      final user =
+                          await _controller.authenticate(email, password);
                       if (user != null) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Inicio de sesión exitoso')),
+                          const SnackBar(
+                              content: Text('Inicio de sesión exitoso')),
                         );
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => MainNavigationScreen(userInfo: user),
+                            builder: (context) =>
+                                MainNavigationScreen(userInfo: user),
                           ),
                         );
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Usuario o contraseña incorrectos.')),
+                          const SnackBar(
+                              content:
+                                  Text('Usuario o contraseña incorrectos.')),
                         );
                       }
                     },

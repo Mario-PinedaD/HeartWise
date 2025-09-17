@@ -57,7 +57,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   Future<void> _checkSession() async {
     try {
-  bool hasActiveSession = await _controllerLogic.hasActiveSession();
+      bool hasActiveSession = await _controllerLogic.hasActiveSession();
 
       if (!mounted) return;
 

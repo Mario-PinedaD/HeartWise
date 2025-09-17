@@ -135,7 +135,7 @@ class _HomeContentWidgetState extends State<_HomeContentWidget> {
     // Si el usuario confirmó, proceder con el logout
     if (shouldLogout == true) {
       // Limpiar la sesión
-  await _homeController.logout();
+      await _homeController.logout();
 
       // Navegar a la pantalla de login y limpiar toda la pila
       Navigator.of(context).pushAndRemoveUntil(

@@ -155,7 +155,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             duration: const Duration(milliseconds: 300),
             transitionBuilder: (Widget child, Animation<double> animation) {
               // Determinar dirección: si vamos a la derecha (índice mayor) o izquierda (índice menor)
-              final isGoingRight = _navController.currentIndex > _navController.previousIndex;
+              final isGoingRight =
+                  _navController.currentIndex > _navController.previousIndex;
 
               return ClipRect(
                 child: SlideTransition(
@@ -240,7 +241,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     required String label,
     required int index,
   }) {
-  final bool isActive = _navController.currentIndex == index;
+    final bool isActive = _navController.currentIndex == index;
 
     return GestureDetector(
       onTap: () {
